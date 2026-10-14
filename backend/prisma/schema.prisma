@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String          @id @default(cuid())
+  email           String          @unique
+  passwordHash    String
+  name            String
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  grantedAccesses FamilyAccess[]  @relation("AccessGrantor")
+  invitedAccesses FamilyAccess[]  @relation("AccessInvitee")
+  ownedProfiles   HealthProfile[] @relation("ProfileOwner")
+}
+
+model HealthProfile {
+  id             String            @id @default(cuid())
+  ownerId        String
+  name           String
+  relationLabel  String?
+  birthDate      DateTime?         @db.Date
+  avatarUrl      String?
+  isPrimary      Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  familyAccesses FamilyAccess[]
+  owner          User              @relation("ProfileOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  medicines      Medicine[]
+  courses        TreatmentCourse[]
+
+  @@index([ownerId])
+}
+
+model FamilyAccess {
+  id              String        @id @default(cuid())
+  profileId       String
+  invitedEmail    String
+  invitedUserId   String?
+  grantedById     String
+  role            AccessRole    @default(VIEWER)
+  status          AccessStatus  @default(PENDING)
+  invitationToken String?       @unique
+  expiresAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  grantedBy       User          @relation("AccessGrantor", fields: [grantedById], references: [id], onDelete: Cascade)
+  invitedUser     User?         @relation("AccessInvitee", fields: [invitedUserId], references: [id])
+  profile         HealthProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, status])
+  @@index([invitedEmail])
+}
+
+model Medicine {
+  id                   String           @id @default(cuid())
+  profileId            String
+  name                 String
+  form                 MedicineForm     @default(OTHER)
+  strengthValue        Decimal?         @db.Decimal(10, 3)
+  strengthUnit         String?
+  quantity             Decimal          @default(0) @db.Decimal(10, 3)
+  quantityUnit         String           @default("шт.")
+  expiryDate           DateTime?        @db.Date
+  prescriptionRequired Boolean          @default(false)
+  lowStockThreshold    Decimal?         @db.Decimal(10, 3)
+  notifyWhenLow        Boolean          @default(true)
+  note                 String?
+  imageUrl             String?
+  isActive             Boolean          @default(true)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  courseLinks          CourseMedicine[]
+  profile              HealthProfile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  pharmacyOffers       PharmacyOffer[]
+
+  @@index([profileId, isActive])
+  @@index([expiryDate])
+}
+
+model TreatmentCourse {
+  id           String           @id @default(cuid())
+  profileId    String
+  title        String
+  note         String?
+  startDate    DateTime         @db.Date
+  endDate      DateTime?        @db.Date
+  isContinuous Boolean          @default(false)
+  status       CourseStatus     @default(ACTIVE)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  medicines    CourseMedicine[]
+  profile      HealthProfile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, status])
+}
+
+model CourseMedicine {
+  id                String          @id @default(cuid())
+  courseId          String
+  medicineId        String
+  doseAmount        Decimal         @db.Decimal(10, 3)
+  doseUnit          String
+  stockUnitsPerDose Decimal         @default(1) @db.Decimal(10, 3)
+  createdAt         DateTime        @default(now())
+  course            TreatmentCourse @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  medicine          Medicine        @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  scheduleRules     ScheduleRule[]
+  doses             ScheduledDose[]
+
+  @@unique([courseId, medicineId])
+  @@index([medicineId])
+}
+
+model ScheduleRule {
+  id               String            @id @default(cuid())
+  courseMedicineId String
+  frequency        ScheduleFrequency @default(DAILY)
+  timeOfDay        String            @db.VarChar(5)
+  weekdays         Int[]             @default([])
+  intervalDays     Int?
+  reminderEnabled  Boolean           @default(false)
+  reminderMinutes  Int               @default(10)
+  createdAt        DateTime          @default(now())
+  courseMedicine   CourseMedicine    @relation(fields: [courseMedicineId], references: [id], onDelete: Cascade)
+
+  @@index([courseMedicineId])
+}
+
+model ScheduledDose {
+  id               String         @id @default(cuid())
+  courseMedicineId String
+  scheduledAt      DateTime
+  status           DoseStatus     @default(PLANNED)
+  takenAt          DateTime?
+  note             String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  courseMedicine   CourseMedicine @relation(fields: [courseMedicineId], references: [id], onDelete: Cascade)
+
+  @@unique([courseMedicineId, scheduledAt])
+  @@index([scheduledAt, status])
+}
+
+model PharmacyOffer {
+  id           String   @id @default(cuid())
+  medicineId   String
+  pharmacyName String
+  productName  String
+  price        Decimal  @db.Decimal(10, 2)
+  currency     String   @default("RUB")
+  productUrl   String
+  isAvailable  Boolean?
+  checkedAt    DateTime @default(now())
+  createdAt    DateTime @default(now())
+  medicine     Medicine @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+
+  @@index([medicineId, price])
+}
+
+enum MedicineForm {
+  TABLET
+  CAPSULE
+  DROPS
+  SYRUP
+  SPRAY
+  OINTMENT
+  INJECTION
+  POWDER
+  OTHER
+}
+
+enum CourseStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  ARCHIVED
+}
+
+enum DoseStatus {
+  PLANNED
+  TAKEN
+  MISSED
+  SKIPPED
+}
+
+enum ScheduleFrequency {
+  DAILY
+  SELECTED_DAYS
+  EVERY_N_DAYS
+}
+
+enum AccessRole {
+  MANAGER
+  VIEWER
+}
+
+enum AccessStatus {
+  PENDING
+  ACTIVE
+  REVOKED
+}
