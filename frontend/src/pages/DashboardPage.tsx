@@ -1,7 +1,124 @@
 import AppHeader from "../components/layout/AppHeader";
 import Footer from "../components/layout/Footer";
+import { useEffect, useState } from "react";
+
+type Dose = {
+  id: string;
+  time: string;
+  name: string;
+  dosage: string;
+  form: string;
+  status: string;
+  takenAt: string | null;
+};
 
 export default function DashboardPage() {
+  const [doses, setDoses] = useState<Dose[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadDoses() {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          setError("Пользователь не авторизован");
+          return;
+        }
+
+        const response = await fetch(
+          "http://localhost:3001/api/dose/today",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setError(data.message || "Не удалось загрузить приёмы");
+          return;
+        }
+
+        setDoses(data.doses);
+      } catch (error) {
+        console.error(error);
+        setError("Не удалось подключиться к серверу");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadDoses();
+  }, []);
+
+  function getPeriod(time: string) {
+    const hour = Number(time.split(":")[0]);
+
+    if (hour < 12) {
+      return "morning";
+    }
+
+    if (hour < 18) {
+      return "day";
+    }
+
+    return "evening";
+  }
+
+  function getMedicineIcon(form: string) {
+    switch (form) {
+      case "TABLET":
+        return "/images/medicines/pill.svg";
+
+      case "CAPSULE":
+        return "/images/medicines/capsule.svg";
+
+      case "DROPS":
+        return "/images/medicines/drop.svg";
+
+      case "OINTMENT":
+        return "/images/medicines/lotion.svg";
+
+      case "SPRAY":
+        return "/images/medicines/spray.svg";
+
+      default:
+        return "/images/medicines/pill.svg";
+    }
+  }
+
+  function renderDoses(period: "morning" | "day" | "evening") {
+    const periodDoses = doses.filter(
+      (dose) => getPeriod(dose.time) === period
+    );
+
+    if (periodDoses.length === 0) {
+      return (
+        <p className="py-3 text-center text-[13px] text-text-muted">
+          Приёмов нет
+        </p>
+      );
+    }
+
+    return (
+      <div className="mt-3 space-y-2">
+        {periodDoses.map((dose) => (
+          <MedicineRow
+            key={dose.id}
+            time={dose.time}
+            name={dose.name}
+            dosage={dose.dosage}
+            icon={getMedicineIcon(dose.form)}
+          />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background-soft">
       <AppHeader />
@@ -56,21 +173,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="mt-3 space-y-2">
-                <MedicineRow
-                  time="08:00"
-                  name="Лозартан"
-                  dosage="1 таблетка"
-                  icon="/images/medicines/pill.svg"
-                />
-
-                <MedicineRow
-                  time="10:00"
-                  name="Витамин D3"
-                  dosage="10 капель"
-                  icon="/images/medicines/drop.svg"
-                />
-              </div>
+              {renderDoses("morning")}
 
               {/* День */}
               <div className="mt-3 flex items-center">
@@ -87,14 +190,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="mt-3">
-                <MedicineRow
-                  time="14:00"
-                  name="Гастрарекс"
-                  dosage="1 капсула"
-                  icon="/images/medicines/capsule.svg"
-                />
-              </div>
+              {renderDoses("day")}
 
               {/* Вечер */}
               <div className="mt-3 flex items-center">
@@ -111,21 +207,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="mt-3 space-y-2">
-                <MedicineRow
-                  time="21:00"
-                  name="Мелаксен"
-                  dosage="1 таблетка"
-                  icon="/images/medicines/pill.svg"
-                />
-
-                <MedicineRow
-                  time="22:00"
-                  name="Азarga"
-                  dosage="2 капли"
-                  icon="/images/medicines/drop.svg"
-                />
-              </div>
+              {renderDoses("evening")}
 
             </div>
           </div>
