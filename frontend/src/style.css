@@ -1,69 +1,85 @@
-:root {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  color: #323131;
-  background: #f7f8f5;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Nunito:wght@700&display=swap');
+@import "tailwindcss";
+
+@theme {
+    /* Цвета */
+  --color-background: #FBFAF7;
+  --color-card: #FBFAF7;
+  --color-background-soft: #EAEBE0;
+
+  --color-lilac-bg: #E3DEE4;
+  --color-green-bg: #DEE2D4;
+  --color-lilac-light: #D4C8DB;
+
+  --color-green-accent: #AFC294;
+  --color-purple-accent: #A589C6;
+  --color-olive-accent: #6F7762;
+
+  --color-text-muted: #919FB8;
+  --color-text-main: #1B2434;
+  --color-text-secondary: #33415A;
+
+  --color-warning: #F66668;
+
+  /* Шрифты */
+  --font-heading: "Nunito", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  /* Скругления */
+  --radius-stat: 7px;
+  --radius-input: 10px;
+  --radius-tab: 20px;
+  --radius-card: 24px;
+  --radius-pill: 50px;
+  --radius-search: 60px;
+
+  /* Тень карточек */
+  --shadow-card: 0 4px 25px rgb(0 0 0 / 10%);
 }
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-}
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--color-background);
+    color: var(--color-text-main);
+    font-family: var(--font-body);
+  }
 
-button,
-input {
-  font: inherit;
-}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+  }
 
-.app {
-  display: grid;
-  min-height: 100vh;
-  place-items: center;
-  padding: 24px;
-}
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
 
-.welcome {
-  width: min(100%, 680px);
-  padding: 48px;
-  background: #ffffff;
-  border: 1px solid #e8e9e5;
-  border-radius: 20px;
-  box-shadow: 0 12px 36px rgb(30 40 20 / 6%);
-}
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
+  }
 
-.eyebrow {
-  color: #718044;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-}
-
-.welcome h1 {
-  margin: 16px 0;
-  font-size: clamp(2rem, 5vw, 3rem);
-  line-height: 1.15;
-}
-
-.welcome > p:not(.eyebrow) {
-  color: #6b6b67;
-  line-height: 1.7;
-}
-
-.status {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 10px 14px;
-  color: #52632d;
-  background: #eef2e4;
-  border-radius: 999px;
-  font-size: 0.9rem;
+    /* Стили для автозаполнения браузером */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--color-text-muted);
+    -webkit-box-shadow: 0 0 0 1000px var(--color-background) inset;
+    box-shadow: 0 0 0 1000px var(--color-background) inset;
+    transition: background-color 9999s ease-in-out 0s;
+  }
 }

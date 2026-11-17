@@ -1,17 +1,21 @@
-export default function App() {
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import DashboardPage from "./pages/DashboardPage";
+
+function App() {
   return (
-    <main className="app">
-      <section className="welcome">
-        <p className="eyebrow">MEDCONTROL</p>
-        <h1>Контроль приёма лекарств</h1>
-        <p>
-          Управляйте лекарствами, курсами лечения и расписанием
-          приёма в одном месте.
-        </p>
-        <span className="status">
-          Интерфейс приложения подготовлен
-        </span>
-      </section>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
+
+export default App;
