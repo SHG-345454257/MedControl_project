@@ -17,6 +17,7 @@ model User {
   grantedAccesses FamilyAccess[]  @relation("AccessGrantor")
   invitedAccesses FamilyAccess[]  @relation("AccessInvitee")
   ownedProfiles   HealthProfile[] @relation("ProfileOwner")
+  notificationSettings NotificationSettings?
 }
 
 model HealthProfile {
@@ -25,10 +26,13 @@ model HealthProfile {
   name           String
   relationLabel  String?
   birthDate      DateTime?         @db.Date
+  phone          String?
+  gender         String?
   avatarUrl      String?
   isPrimary      Boolean           @default(false)
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
+
   familyAccesses FamilyAccess[]
   owner          User              @relation("ProfileOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   medicines      Medicine[]
@@ -141,6 +145,8 @@ model ScheduledDose {
   note             String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+  stockDebited     Decimal?
+  stockDebitedUnit String?
   courseMedicine   CourseMedicine @relation(fields: [courseMedicineId], references: [id], onDelete: Cascade)
 
   @@unique([courseMedicineId, scheduledAt])
@@ -161,6 +167,17 @@ model PharmacyOffer {
   medicine     Medicine @relation(fields: [medicineId], references: [id], onDelete: Cascade)
 
   @@index([medicineId, price])
+}
+
+model NotificationSettings {
+  id          String  @id @default(cuid())
+  userId      String  @unique
+
+  pushEnabled Boolean @default(true)
+  soundEnabled Boolean @default(true)
+  emailReports Boolean @default(false)
+
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum MedicineForm {

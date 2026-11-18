@@ -20,12 +20,23 @@ export async function registerUser({ name, email, password }) {
   // Хэшируем пароль
   const passwordHash = await bcrypt.hash(password, 12);
 
-  // Создаём пользователя в базе данных
+  // Создаём пользователя и его основной медицинский профиль
   const user = await prisma.user.create({
     data: {
       name: name.trim(),
       email: normalizedEmail,
-      passwordHash
+      passwordHash,
+
+      ownedProfiles: {
+        create: {
+          name: name.trim(),
+          relationLabel: "SELF",
+          isPrimary: true
+        }
+      },
+      notificationSettings: {
+        create: {}
+      }
     },
     select: {
       id: true,
@@ -84,4 +95,62 @@ export async function loginUser({ email, password }) {
       email: user.email
     }
   };
+}
+
+// Смена пароля пользователя
+export async function changePassword(userId, {
+  currentPassword,
+  newPassword
+}) {
+  // Находим пользователя
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId
+    }
+  });
+
+  if (!user) {
+    const error = new Error("Пользователь не найден");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  // Проверяем текущий пароль
+  const isPasswordValid = await bcrypt.compare(
+    currentPassword,
+    user.passwordHash
+  );
+
+  if (!isPasswordValid) {
+    const error = new Error("Неверный текущий пароль");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Проверяем, отличается ли новый пароль от текущего
+  const isSamePassword = await bcrypt.compare(
+    newPassword,
+    user.passwordHash
+  );
+
+  if (isSamePassword) {
+    const error = new Error("Новый пароль должен отличаться от текущего");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Хэшируем новый пароль
+  const newPasswordHash = await bcrypt.hash(newPassword, 12);
+
+  // Сохраняем новый хэш
+  await prisma.user.update({
+    where: {
+      id: userId
+    },
+    data: {
+      passwordHash: newPasswordHash
+    }
+  });
+
+  return true;
 }

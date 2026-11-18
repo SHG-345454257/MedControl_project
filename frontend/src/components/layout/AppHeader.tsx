@@ -8,11 +8,14 @@ const navigationLinks = [
   { title: "Семейный доступ", href: "/family" },
 ];
 
-export default function AppHeader() {
-  const [menuOpen, setMenuOpen] = useState(false);
+type AppHeaderProps = {
+  activePage?: string | null;
+};
 
-  // Пока активная страница — Дашборд
-  const activePage = "Дашборд";
+export default function AppHeader({
+  activePage = "Дашборд"
+}: AppHeaderProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="relative z-20 w-full bg-background">

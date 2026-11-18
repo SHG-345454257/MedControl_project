@@ -2,11 +2,15 @@ import { getTodayDoses } from "../services/dose.service.js";
 
 export async function getToday(req, res, next) {
   try {
-    const doses = await getTodayDoses(req.userId);
+    const doses = await getTodayDoses(req.userId, req.query.profileId);
 
     const result = doses.map((dose) => ({
         id: dose.id,
-        time: dose.scheduledAt.toISOString().slice(11, 16),
+        time: dose.scheduledAt.toLocaleTimeString("ru-RU", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hourCycle: "h23"
+        }),
         name: dose.courseMedicine.medicine.name,
         dosage: `${dose.courseMedicine.doseAmount} ${dose.courseMedicine.doseUnit}`,
         form: dose.courseMedicine.medicine.form,

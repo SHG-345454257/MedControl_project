@@ -78,3 +78,40 @@ export function validateLogin(req, res, next) {
 
   next();
 }
+
+export function validateChangePassword(req, res, next) {
+  const { currentPassword, newPassword, repeatPassword } = req.body ?? {};
+
+  if (
+    typeof currentPassword !== "string" ||
+    typeof newPassword !== "string" ||
+    typeof repeatPassword !== "string" ||
+    !currentPassword ||
+    !newPassword ||
+    !repeatPassword
+  ) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Заполните все поля"
+    });
+  }
+
+  if (
+    newPassword.length < 8 ||
+    Buffer.byteLength(newPassword, "utf8") > 72
+  ) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Новый пароль должен содержать не менее 8 символов"
+    });
+  }
+
+  if (newPassword !== repeatPassword) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Новые пароли не совпадают"
+    });
+  }
+
+  next();
+}

@@ -1,6 +1,7 @@
 import {
   registerUser,
-  loginUser
+  loginUser,
+  changePassword
 } from "../services/auth.service.js";
 
 import { prisma } from "../config/prisma.js";
@@ -71,6 +72,25 @@ export async function getMe(req, res, next) {
     res.status(200).json({
       status: "success",
       user
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// Смена пароля
+export async function updatePassword(req, res, next) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    await changePassword(req.userId, {
+      currentPassword,
+      newPassword
+    });
+
+    res.status(200).json({
+      status: "success",
+      message: "Пароль успешно изменён"
     });
   } catch (error) {
     next(error);
