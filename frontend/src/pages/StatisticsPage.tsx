@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../services/api";
 import { useEffect, useState } from "react";
 
 import AppHeader from "../components/layout/AppHeader";
@@ -47,7 +48,7 @@ export default function StatisticsPage() {
         if (!token) throw new Error("Войдите в аккаунт, чтобы посмотреть статистику");
 
         const params = new URLSearchParams({ period, month });
-        const response = await fetch(`http://localhost:3001/api/statistics?${params}`, {
+        const response = await fetch(`${API_BASE_URL}/statistics?${params}`, {
           signal: controller.signal,
           headers: { Authorization: `Bearer ${token}` }
         });

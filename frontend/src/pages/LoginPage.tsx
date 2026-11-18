@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../services/api";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import { useState, type FormEvent } from "react";
@@ -13,7 +14,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3001/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

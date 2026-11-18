@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../services/api";
 export const medicineForms = {
   TABLET: "Таблетки",
   CAPSULE: "Капсулы",
@@ -75,7 +76,7 @@ export async function medicineRequest<T>(path = "", options: RequestInit = {}): 
   headers.set("Authorization", `Bearer ${token}`);
   if (options.body) headers.set("Content-Type", "application/json");
 
-  const response = await fetch(`http://localhost:3001/api/medicine${path}`, {
+  const response = await fetch(`${API_BASE_URL}/medicine${path}`, {
     ...options,
     headers
   });

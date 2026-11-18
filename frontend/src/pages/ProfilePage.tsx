@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../services/api";
 import { useEffect, useState } from "react";
 
 import AppHeader from "../components/layout/AppHeader";
@@ -24,7 +25,7 @@ type NotificationSettingsData = {
 
 type Tab = "personal" | "notifications" | "security";
 
-const profileUrl = "http://localhost:3001/api/profile";
+const profileUrl = `${API_BASE_URL}/profile`;
 const avatarSize = 192;
 const avatarLimit = 60000;
 

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../services/api";
 import { useEffect, useState } from "react";
 
 type Profile = {
@@ -60,7 +61,7 @@ export default function PersonalInfo({
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("http://localhost:3001/api/profile", {
+      const response = await fetch(`${API_BASE_URL}/profile`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

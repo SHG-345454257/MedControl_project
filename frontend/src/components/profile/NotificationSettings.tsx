@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../services/api";
 import { useEffect, useState } from "react";
 
 type NotificationSettingsData = {
@@ -59,7 +60,7 @@ export default function NotificationSettings({
       }
 
       const response = await fetch(
-        "http://localhost:3001/api/profile/notifications",
+        `${API_BASE_URL}/profile/notifications`,
         {
           method: "PATCH",
           headers: {

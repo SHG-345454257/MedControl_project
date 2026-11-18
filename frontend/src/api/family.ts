@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../services/api";
 export async function familyRequest<T>(
   path = "",
   options: RequestInit = {}
@@ -15,7 +16,7 @@ export async function familyRequest<T>(
     headers.set("Content-Type", "application/json");
   }
 
-  const response = await fetch(`http://localhost:3001/api/family${path}`, {
+  const response = await fetch(`${API_BASE_URL}/family${path}`, {
     ...options,
     headers
   });

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../services/api";
 export type CourseMedicineInput = {
   medicineId: string;
   doseAmount: string;
@@ -32,7 +33,7 @@ export async function courseRequest<T>(path = "", options: RequestInit = {}): Pr
   headers.set("Authorization", `Bearer ${token}`);
   if (options.body) headers.set("Content-Type", "application/json");
 
-  const response = await fetch(`http://localhost:3001/api/courses${path}`, { ...options, headers });
+  const response = await fetch(`${API_BASE_URL}/courses${path}`, { ...options, headers });
   if (response.status === 204) return undefined as T;
 
   const data = await response.json().catch(() => null);

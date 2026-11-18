@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../services/api";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 
@@ -55,7 +56,7 @@ export default function ChangePassword() {
       }
 
       const response = await fetch(
-        "http://localhost:3001/api/auth/change-password",
+        `${API_BASE_URL}/auth/change-password`,
         {
           method: "PATCH",
           headers: {

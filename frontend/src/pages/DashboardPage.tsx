@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../services/api";
 import { useEffect, useState } from "react";
 
 import AppHeader from "../components/layout/AppHeader";
@@ -62,7 +63,7 @@ export default function DashboardPage() {
         }
 
         const response = await fetch(
-          "http://localhost:3001/api/dose/today",
+          `${API_BASE_URL}/dose/today`,
           {
             headers: { Authorization: `Bearer ${token}` },
             signal: controller.signal
@@ -115,7 +116,7 @@ export default function DashboardPage() {
       if (!token) throw new Error("Пользователь не авторизован");
 
       const response = await fetch(
-        `http://localhost:3001/api/dose/${encodeURIComponent(dose.id)}/status`,
+        `${API_BASE_URL}/dose/${encodeURIComponent(dose.id)}/status`,
         {
           method: "PATCH",
           headers: {
