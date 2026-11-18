@@ -7,6 +7,7 @@ import ProfileSidebar from "../components/profile/ProfileSidebar";
 import PersonalInfo from "../components/profile/PersonalInfo";
 import NotificationSettings from "../components/profile/NotificationSettings";
 import ChangePassword from "../components/profile/ChangePassword";
+import { useNavigate } from "react-router-dom";
 
 type Profile = {
   id: string;
@@ -92,6 +93,7 @@ async function prepareAvatar(file: File): Promise<string> {
 }
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("personal");
   const [profile, setProfile] = useState<Profile | null>(null);
 
@@ -213,6 +215,11 @@ export default function ProfilePage() {
     );
   }
 
+  function handleLogout() {
+    localStorage.removeItem("token");
+    navigate("/login", { replace: true });
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-background-soft">
       <AppHeader activePage={null} />
@@ -220,9 +227,20 @@ export default function ProfilePage() {
       <main className="flex flex-1 flex-col">
         <section className="flex-1 px-6 pb-8 pt-8">
           <div className="mx-auto max-w-[1100px]">
-            <h1 className="mb-6 font-heading text-[32px] font-bold text-text-main">
-              Личный кабинет
-            </h1>
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              <h1 className="font-heading text-[32px] font-bold text-text-main">
+                Личный кабинет
+              </h1>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-pill px-3 font-heading text-sm font-bold text-text-main transition hover:bg-green-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive-accent"
+              >
+                <img src="/images/profile/exit.svg" alt="" className="h-5 w-5 object-contain" />
+                Выйти
+              </button>
+            </div>
 
             {loading && (
               <div className="rounded-card bg-card p-8 text-center shadow-card">
