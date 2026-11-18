@@ -2,6 +2,7 @@ import { Router } from "express";
 import { prisma } from "../config/prisma.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { scheduleCourseDay } from "../services/course-schedule.js";
+import { scheduleNow, startOfScheduleWeek } from "../services/schedule-clock.js";
 
 const router = Router();
 router.use(authMiddleware);
@@ -82,11 +83,10 @@ router.get("/", async (req, res, next) => {
       where: owned(req.userId), include: includeCourse, orderBy: { createdAt: "desc" }
     });
 
-    const today = new Date();
-    const week = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    week.setDate(week.getDate() - (week.getDay() + 6) % 7);
+    const today = scheduleNow();
+    const week = startOfScheduleWeek(today);
     const nextWeek = new Date(week);
-    nextWeek.setDate(week.getDate() + 7);
+    nextWeek.setUTCDate(week.getUTCDate() + 7);
     const doses = await prisma.scheduledDose.findMany({
       where: {
         courseMedicine: { course: owned(req.userId) },
@@ -105,7 +105,7 @@ router.get("/", async (req, res, next) => {
     for (const dose of doses) {
       const id = dose.courseMedicine.courseId;
       const days = totals.get(id) ?? Array.from({ length: 7 }, () => ({ taken: 0, missed: 0 }));
-      const bucket = days[(dose.scheduledAt.getDay() + 6) % 7];
+      const bucket = days[(dose.scheduledAt.getUTCDay() + 6) % 7];
       if (dose.status === "TAKEN") bucket.taken++;
       else bucket.missed++;
       totals.set(id, days);
@@ -151,7 +151,7 @@ async function writeCourse(req, res, next) {
         ? await db.treatmentCourse.update({ where: { id: existing.id }, data: fields })
         : await db.treatmentCourse.create({ data: { ...fields, profileId } });
 
-      const now = new Date();
+      const now = scheduleNow();
       await db.scheduledDose.deleteMany({
         where: { courseMedicine: { courseId: course.id }, status: "PLANNED", scheduledAt: { gte: now } }
       });
@@ -197,7 +197,7 @@ router.delete("/:id", async (req, res, next) => {
       await db.scheduledDose.deleteMany({
         where: {
           courseMedicine: { courseId: req.params.id },
-          status: "PLANNED", scheduledAt: { gte: new Date() }
+          status: "PLANNED", scheduledAt: { gte: scheduleNow() }
         }
       });
     });

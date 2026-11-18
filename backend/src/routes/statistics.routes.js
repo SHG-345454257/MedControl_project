@@ -1,20 +1,15 @@
 import { Router } from "express";
 import { prisma } from "../config/prisma.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
+import { dateKey, scheduleNow, startOfScheduleDay, startOfScheduleWeek } from "../services/schedule-clock.js";
 
 const router = Router();
-
-function dateKey(date) {
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${date.getFullYear()}-${month}-${day}`;
-}
 
 function addYearPlan(buckets, courses, doses, now) {
   const recorded = new Set(doses.map((dose) =>
     `${dose.courseMedicineId}:${dose.scheduledAt.getTime()}`
   ));
-  const year = now.getFullYear();
+  const year = now.getUTCFullYear();
 
   for (const course of courses) {
     const first = course.startDate.toISOString().slice(0, 10);
@@ -28,8 +23,8 @@ function addYearPlan(buckets, courses, doses, now) {
     if (!rules.length) continue;
 
     // Historical dates rely on recorded doses: today's rules may have changed since then.
-    const day = new Date(year, now.getMonth(), now.getDate());
-    for (; day.getFullYear() === year; day.setDate(day.getDate() + 1)) {
+    const day = startOfScheduleDay(now);
+    for (; day.getUTCFullYear() === year; day.setUTCDate(day.getUTCDate() + 1)) {
       const key = dateKey(day);
       if (key < first) continue;
       if (last && key > last) break;
@@ -37,10 +32,10 @@ function addYearPlan(buckets, courses, doses, now) {
       for (const { medicineId, timeOfDay } of rules) {
         const [hours, minutes] = timeOfDay.split(":").map(Number);
         const time = new Date(day);
-        time.setHours(hours, minutes, 0, 0);
+        time.setUTCHours(hours, minutes, 0, 0);
         const doseKey = `${medicineId}:${time.getTime()}`;
         if (!recorded.has(doseKey)) {
-          buckets[day.getMonth()].planned++;
+          buckets[day.getUTCMonth()].planned++;
           recorded.add(doseKey);
         }
       }
@@ -60,21 +55,20 @@ router.get("/", authMiddleware, async (req, res, next) => {
       return res.status(400).json({ message: "Укажите период и месяц в формате ГГГГ-ММ" });
     }
 
-    const now = new Date();
-    const year = now.getFullYear();
-    const weekStart = new Date(year, now.getMonth(), now.getDate());
-    weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + 6) % 7);
+    const now = scheduleNow();
+    const year = now.getUTCFullYear();
+    const weekStart = startOfScheduleWeek(now);
 
     const bucketCount = period === "week" ? 7 : 12;
     const boundaries = Array.from({ length: bucketCount + 1 }, (_, index) =>
       period === "week"
-        ? new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + index)
-        : new Date(year, index, 1)
+        ? new Date(Date.UTC(weekStart.getUTCFullYear(), weekStart.getUTCMonth(), weekStart.getUTCDate() + index))
+        : new Date(Date.UTC(year, index, 1))
     );
 
     const [calendarYear, calendarMonth] = month.split("-").map(Number);
-    const monthStart = new Date(calendarYear, calendarMonth - 1, 1);
-    const monthEnd = new Date(calendarYear, calendarMonth, 1);
+    const monthStart = new Date(Date.UTC(calendarYear, calendarMonth - 1, 1));
+    const monthEnd = new Date(Date.UTC(calendarYear, calendarMonth, 1));
 
     const doses = await prisma.scheduledDose.findMany({
       where: {
@@ -129,7 +123,7 @@ router.get("/", authMiddleware, async (req, res, next) => {
           startDate: { lt: new Date(Date.UTC(year + 1, 0, 1)) },
           OR: [
             { endDate: null },
-            { endDate: { gte: new Date(`${dateKey(now)}T00:00:00Z`) } }
+            { endDate: { gte: startOfScheduleDay(now) } }
           ]
         },
         select: {

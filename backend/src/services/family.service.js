@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { prisma } from "../config/prisma.js";
+import { todayRange } from "./schedule-clock.js";
 
 function httpError(statusCode, message) {
   return Object.assign(new Error(message), { statusCode });
@@ -20,16 +21,6 @@ export function visibleProfiles(userId) {
       }
     ]
   };
-}
-
-export function todayRange() {
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-
-  const end = new Date(start);
-  end.setDate(end.getDate() + 1);
-
-  return { gte: start, lt: end };
 }
 
 export async function getFamily(userId) {

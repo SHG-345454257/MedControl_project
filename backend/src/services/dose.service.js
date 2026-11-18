@@ -1,8 +1,9 @@
 import { prisma } from "../config/prisma.js";
-import { todayRange, visibleProfiles } from "./family.service.js";
+import { visibleProfiles } from "./family.service.js";
+import { scheduleNow, todayRange } from "./schedule-clock.js";
 import { ensureCourseDosesForToday } from "./course-schedule.js";
 
-export async function getTodayDoses(userId, profileId) {
+export async function getTodayDoses(userId, profileId, day = scheduleNow()) {
   const profileFilter = profileId === undefined
     ? { ownerId: userId }
     : { id: profileId, ...visibleProfiles(userId) };
@@ -26,11 +27,11 @@ export async function getTodayDoses(userId, profileId) {
     }
   }
 
-  await ensureCourseDosesForToday(profileFilter);
+  await ensureCourseDosesForToday(profileFilter, day);
 
   return prisma.scheduledDose.findMany({
     where: {
-      scheduledAt: todayRange(),
+      scheduledAt: todayRange(day),
       courseMedicine: {
         course: { profile: profileFilter }
       }

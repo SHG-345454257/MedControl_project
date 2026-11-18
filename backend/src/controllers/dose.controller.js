@@ -1,15 +1,18 @@
 import { getTodayDoses } from "../services/dose.service.js";
+import { dateKey, scheduleNow } from "../services/schedule-clock.js";
 
 export async function getToday(req, res, next) {
   try {
-    const doses = await getTodayDoses(req.userId, req.query.profileId);
+    const day = scheduleNow();
+    const doses = await getTodayDoses(req.userId, req.query.profileId, day);
 
     const result = doses.map((dose) => ({
         id: dose.id,
         time: dose.scheduledAt.toLocaleTimeString("ru-RU", {
           hour: "2-digit",
           minute: "2-digit",
-          hourCycle: "h23"
+          hourCycle: "h23",
+          timeZone: "UTC"
         }),
         name: dose.courseMedicine.medicine.name,
         dosage: `${dose.courseMedicine.doseAmount} ${dose.courseMedicine.doseUnit}`,
@@ -20,7 +23,7 @@ export async function getToday(req, res, next) {
 
     res.status(200).json({
       status: "success",
-      date: new Date().toISOString().slice(0, 10),
+      date: dateKey(day),
       doses: result
     });
   } catch (error) {

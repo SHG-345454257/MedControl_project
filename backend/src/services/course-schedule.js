@@ -1,12 +1,5 @@
 import { prisma } from "../config/prisma.js";
-
-export function dateKey(date) {
-  return [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, "0"),
-    String(date.getDate()).padStart(2, "0")
-  ].join("-");
-}
+import { dateKey, scheduleNow, startOfScheduleDay } from "./schedule-clock.js";
 
 export async function scheduleCourseDay(db, course, day) {
   const key = dateKey(day);
@@ -17,7 +10,7 @@ export async function scheduleCourseDay(db, course, day) {
     medicine.scheduleRules.filter(({ frequency }) => frequency === "DAILY").map(({ timeOfDay }) => {
       const [hours, minutes] = timeOfDay.split(":").map(Number);
       const scheduledAt = new Date(day);
-      scheduledAt.setHours(hours, minutes, 0, 0);
+      scheduledAt.setUTCHours(hours, minutes, 0, 0);
       return { courseMedicineId: medicine.id, scheduledAt };
     })
   );
@@ -28,8 +21,8 @@ export async function scheduleCourseDay(db, course, day) {
 }
 
 // Call before querying the dashboard to extend active schedules each day.
-export async function ensureCourseDosesForToday(profileFilter, day = new Date()) {
-  const date = new Date(`${dateKey(day)}T00:00:00Z`);
+export async function ensureCourseDosesForToday(profileFilter, day = scheduleNow()) {
+  const date = startOfScheduleDay(day);
   const courses = await prisma.treatmentCourse.findMany({
     where: {
       profile: profileFilter,

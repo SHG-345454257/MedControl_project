@@ -1,0 +1,324 @@
+diff --git a/backend/src/controllers/dose.controller.js b/backend/src/controllers/dose.controller.js
+index e3600b5..67801fc 100644
+--- a/backend/src/controllers/dose.controller.js
++++ b/backend/src/controllers/dose.controller.js
+@@ -1,15 +1,18 @@
+ import { getTodayDoses } from "../services/dose.service.js";
++import { dateKey, scheduleNow } from "../services/schedule-clock.js";
+ 
+ export async function getToday(req, res, next) {
+   try {
+-    const doses = await getTodayDoses(req.userId, req.query.profileId);
++    const day = scheduleNow();
++    const doses = await getTodayDoses(req.userId, req.query.profileId, day);
+ 
+     const result = doses.map((dose) => ({
+         id: dose.id,
+         time: dose.scheduledAt.toLocaleTimeString("ru-RU", {
+           hour: "2-digit",
+           minute: "2-digit",
+-          hourCycle: "h23"
++          hourCycle: "h23",
++          timeZone: "UTC"
+         }),
+         name: dose.courseMedicine.medicine.name,
+         dosage: `${dose.courseMedicine.doseAmount} ${dose.courseMedicine.doseUnit}`,
+@@ -20,7 +23,7 @@ export async function getToday(req, res, next) {
+ 
+     res.status(200).json({
+       status: "success",
+-      date: new Date().toISOString().slice(0, 10),
++      date: dateKey(day),
+       doses: result
+     });
+   } catch (error) {
+diff --git a/backend/src/routes/course.routes.js b/backend/src/routes/course.routes.js
+index 0a7139e..3eb4780 100644
+--- a/backend/src/routes/course.routes.js
++++ b/backend/src/routes/course.routes.js
+@@ -2,6 +2,7 @@ import { Router } from "express";
+ import { prisma } from "../config/prisma.js";
+ import { authMiddleware } from "../middleware/auth.middleware.js";
+ import { scheduleCourseDay } from "../services/course-schedule.js";
++import { scheduleNow, startOfScheduleWeek } from "../services/schedule-clock.js";
+ 
+ const router = Router();
+ router.use(authMiddleware);
+@@ -82,11 +83,10 @@ router.get("/", async (req, res, next) => {
+       where: owned(req.userId), include: includeCourse, orderBy: { createdAt: "desc" }
+     });
+ 
+-    const today = new Date();
+-    const week = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+-    week.setDate(week.getDate() - (week.getDay() + 6) % 7);
++    const today = scheduleNow();
++    const week = startOfScheduleWeek(today);
+     const nextWeek = new Date(week);
+-    nextWeek.setDate(week.getDate() + 7);
++    nextWeek.setUTCDate(week.getUTCDate() + 7);
+     const doses = await prisma.scheduledDose.findMany({
+       where: {
+         courseMedicine: { course: owned(req.userId) },
+@@ -105,7 +105,7 @@ router.get("/", async (req, res, next) => {
+     for (const dose of doses) {
+       const id = dose.courseMedicine.courseId;
+       const days = totals.get(id) ?? Array.from({ length: 7 }, () => ({ taken: 0, missed: 0 }));
+-      const bucket = days[(dose.scheduledAt.getDay() + 6) % 7];
++      const bucket = days[(dose.scheduledAt.getUTCDay() + 6) % 7];
+       if (dose.status === "TAKEN") bucket.taken++;
+       else bucket.missed++;
+       totals.set(id, days);
+@@ -151,7 +151,7 @@ async function writeCourse(req, res, next) {
+         ? await db.treatmentCourse.update({ where: { id: existing.id }, data: fields })
+         : await db.treatmentCourse.create({ data: { ...fields, profileId } });
+ 
+-      const now = new Date();
++      const now = scheduleNow();
+       await db.scheduledDose.deleteMany({
+         where: { courseMedicine: { courseId: course.id }, status: "PLANNED", scheduledAt: { gte: now } }
+       });
+@@ -197,7 +197,7 @@ router.delete("/:id", async (req, res, next) => {
+       await db.scheduledDose.deleteMany({
+         where: {
+           courseMedicine: { courseId: req.params.id },
+-          status: "PLANNED", scheduledAt: { gte: new Date() }
++          status: "PLANNED", scheduledAt: { gte: scheduleNow() }
+         }
+       });
+     });
+diff --git a/backend/src/routes/statistics.routes.js b/backend/src/routes/statistics.routes.js
+index 65e5bdd..6cdc6b4 100644
+--- a/backend/src/routes/statistics.routes.js
++++ b/backend/src/routes/statistics.routes.js
+@@ -1,20 +1,15 @@
+ import { Router } from "express";
+ import { prisma } from "../config/prisma.js";
+ import { authMiddleware } from "../middleware/auth.middleware.js";
++import { dateKey, scheduleNow, startOfScheduleDay, startOfScheduleWeek } from "../services/schedule-clock.js";
+ 
+ const router = Router();
+ 
+-function dateKey(date) {
+-  const month = String(date.getMonth() + 1).padStart(2, "0");
+-  const day = String(date.getDate()).padStart(2, "0");
+-  return `${date.getFullYear()}-${month}-${day}`;
+-}
+-
+ function addYearPlan(buckets, courses, doses, now) {
+   const recorded = new Set(doses.map((dose) =>
+     `${dose.courseMedicineId}:${dose.scheduledAt.getTime()}`
+   ));
+-  const year = now.getFullYear();
++  const year = now.getUTCFullYear();
+ 
+   for (const course of courses) {
+     const first = course.startDate.toISOString().slice(0, 10);
+@@ -28,8 +23,8 @@ function addYearPlan(buckets, courses, doses, now) {
+     if (!rules.length) continue;
+ 
+     // Historical dates rely on recorded doses: today's rules may have changed since then.
+-    const day = new Date(year, now.getMonth(), now.getDate());
+-    for (; day.getFullYear() === year; day.setDate(day.getDate() + 1)) {
++    const day = startOfScheduleDay(now);
++    for (; day.getUTCFullYear() === year; day.setUTCDate(day.getUTCDate() + 1)) {
+       const key = dateKey(day);
+       if (key < first) continue;
+       if (last && key > last) break;
+@@ -37,10 +32,10 @@ function addYearPlan(buckets, courses, doses, now) {
+       for (const { medicineId, timeOfDay } of rules) {
+         const [hours, minutes] = timeOfDay.split(":").map(Number);
+         const time = new Date(day);
+-        time.setHours(hours, minutes, 0, 0);
++        time.setUTCHours(hours, minutes, 0, 0);
+         const doseKey = `${medicineId}:${time.getTime()}`;
+         if (!recorded.has(doseKey)) {
+-          buckets[day.getMonth()].planned++;
++          buckets[day.getUTCMonth()].planned++;
+           recorded.add(doseKey);
+         }
+       }
+@@ -60,21 +55,20 @@ router.get("/", authMiddleware, async (req, res, next) => {
+       return res.status(400).json({ message: "Укажите период и месяц в формате ГГГГ-ММ" });
+     }
+ 
+-    const now = new Date();
+-    const year = now.getFullYear();
+-    const weekStart = new Date(year, now.getMonth(), now.getDate());
+-    weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + 6) % 7);
++    const now = scheduleNow();
++    const year = now.getUTCFullYear();
++    const weekStart = startOfScheduleWeek(now);
+ 
+     const bucketCount = period === "week" ? 7 : 12;
+     const boundaries = Array.from({ length: bucketCount + 1 }, (_, index) =>
+       period === "week"
+-        ? new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + index)
+-        : new Date(year, index, 1)
++        ? new Date(Date.UTC(weekStart.getUTCFullYear(), weekStart.getUTCMonth(), weekStart.getUTCDate() + index))
++        : new Date(Date.UTC(year, index, 1))
+     );
+ 
+     const [calendarYear, calendarMonth] = month.split("-").map(Number);
+-    const monthStart = new Date(calendarYear, calendarMonth - 1, 1);
+-    const monthEnd = new Date(calendarYear, calendarMonth, 1);
++    const monthStart = new Date(Date.UTC(calendarYear, calendarMonth - 1, 1));
++    const monthEnd = new Date(Date.UTC(calendarYear, calendarMonth, 1));
+ 
+     const doses = await prisma.scheduledDose.findMany({
+       where: {
+@@ -129,7 +123,7 @@ router.get("/", authMiddleware, async (req, res, next) => {
+           startDate: { lt: new Date(Date.UTC(year + 1, 0, 1)) },
+           OR: [
+             { endDate: null },
+-            { endDate: { gte: new Date(`${dateKey(now)}T00:00:00Z`) } }
++            { endDate: { gte: startOfScheduleDay(now) } }
+           ]
+         },
+         select: {
+diff --git a/backend/src/services/course-schedule.js b/backend/src/services/course-schedule.js
+index 2129d9a..261e785 100644
+--- a/backend/src/services/course-schedule.js
++++ b/backend/src/services/course-schedule.js
+@@ -1,12 +1,5 @@
+ import { prisma } from "../config/prisma.js";
+-
+-export function dateKey(date) {
+-  return [
+-    date.getFullYear(),
+-    String(date.getMonth() + 1).padStart(2, "0"),
+-    String(date.getDate()).padStart(2, "0")
+-  ].join("-");
+-}
++import { dateKey, scheduleNow, startOfScheduleDay } from "./schedule-clock.js";
+ 
+ export async function scheduleCourseDay(db, course, day) {
+   const key = dateKey(day);
+@@ -17,7 +10,7 @@ export async function scheduleCourseDay(db, course, day) {
+     medicine.scheduleRules.filter(({ frequency }) => frequency === "DAILY").map(({ timeOfDay }) => {
+       const [hours, minutes] = timeOfDay.split(":").map(Number);
+       const scheduledAt = new Date(day);
+-      scheduledAt.setHours(hours, minutes, 0, 0);
++      scheduledAt.setUTCHours(hours, minutes, 0, 0);
+       return { courseMedicineId: medicine.id, scheduledAt };
+     })
+   );
+@@ -28,8 +21,8 @@ export async function scheduleCourseDay(db, course, day) {
+ }
+ 
+ // Call before querying the dashboard to extend active schedules each day.
+-export async function ensureCourseDosesForToday(profileFilter, day = new Date()) {
+-  const date = new Date(`${dateKey(day)}T00:00:00Z`);
++export async function ensureCourseDosesForToday(profileFilter, day = scheduleNow()) {
++  const date = startOfScheduleDay(day);
+   const courses = await prisma.treatmentCourse.findMany({
+     where: {
+       profile: profileFilter,
+diff --git a/backend/src/services/dose.service.js b/backend/src/services/dose.service.js
+index d685708..4fb17ab 100644
+--- a/backend/src/services/dose.service.js
++++ b/backend/src/services/dose.service.js
+@@ -1,8 +1,9 @@
+ import { prisma } from "../config/prisma.js";
+-import { todayRange, visibleProfiles } from "./family.service.js";
++import { visibleProfiles } from "./family.service.js";
++import { scheduleNow, todayRange } from "./schedule-clock.js";
+ import { ensureCourseDosesForToday } from "./course-schedule.js";
+ 
+-export async function getTodayDoses(userId, profileId) {
++export async function getTodayDoses(userId, profileId, day = scheduleNow()) {
+   const profileFilter = profileId === undefined
+     ? { ownerId: userId }
+     : { id: profileId, ...visibleProfiles(userId) };
+@@ -26,11 +27,11 @@ export async function getTodayDoses(userId, profileId) {
+     }
+   }
+ 
+-  await ensureCourseDosesForToday(profileFilter);
++  await ensureCourseDosesForToday(profileFilter, day);
+ 
+   return prisma.scheduledDose.findMany({
+     where: {
+-      scheduledAt: todayRange(),
++      scheduledAt: todayRange(day),
+       courseMedicine: {
+         course: { profile: profileFilter }
+       }
+diff --git a/backend/src/services/family.service.js b/backend/src/services/family.service.js
+index d4b04c2..4474687 100644
+--- a/backend/src/services/family.service.js
++++ b/backend/src/services/family.service.js
+@@ -1,5 +1,6 @@
+ import { createHash, randomBytes } from "node:crypto";
+ import { prisma } from "../config/prisma.js";
++import { todayRange } from "./schedule-clock.js";
+ 
+ function httpError(statusCode, message) {
+   return Object.assign(new Error(message), { statusCode });
+@@ -22,16 +23,6 @@ export function visibleProfiles(userId) {
+   };
+ }
+ 
+-export function todayRange() {
+-  const start = new Date();
+-  start.setHours(0, 0, 0, 0);
+-
+-  const end = new Date(start);
+-  end.setDate(end.getDate() + 1);
+-
+-  return { gte: start, lt: end };
+-}
+-
+ export async function getFamily(userId) {
+   const [profiles, invitations] = await Promise.all([
+     prisma.healthProfile.findMany({
+diff --git a/backend/src/services/schedule-clock.js b/backend/src/services/schedule-clock.js
+new file mode 100644
+index 0000000..d68f16c
+--- /dev/null
++++ b/backend/src/services/schedule-clock.js
+@@ -0,0 +1,45 @@
++const scheduleClock = new Intl.DateTimeFormat("en-GB", {
++  timeZone: "Asia/Novosibirsk",
++  year: "numeric",
++  month: "2-digit",
++  day: "2-digit",
++  hour: "2-digit",
++  minute: "2-digit",
++  second: "2-digit",
++  hourCycle: "h23"
++});
++
++// Existing UTC deployments store the calendar date and time from the
++// schedule directly in scheduledAt. Preserve that representation for deduplication.
++export function scheduleNow(instant = new Date()) {
++  const { year, month, day, hour, minute, second } = Object.fromEntries(
++    scheduleClock.formatToParts(instant).map(({ type, value }) => [type, value])
++  );
++  return new Date(Date.UTC(
++    Number(year), Number(month) - 1, Number(day),
++    Number(hour), Number(minute), Number(second), instant.getUTCMilliseconds()
++  ));
++}
++
++export function dateKey(day) {
++  return day.toISOString().slice(0, 10);
++}
++
++export function startOfScheduleDay(day) {
++  const start = new Date(day);
++  start.setUTCHours(0, 0, 0, 0);
++  return start;
++}
++
++export function startOfScheduleWeek(day) {
++  const start = startOfScheduleDay(day);
++  start.setUTCDate(start.getUTCDate() - (start.getUTCDay() + 6) % 7);
++  return start;
++}
++
++export function todayRange(day = scheduleNow()) {
++  const start = startOfScheduleDay(day);
++  const end = new Date(start);
++  end.setUTCDate(end.getUTCDate() + 1);
++  return { gte: start, lt: end };
++}
