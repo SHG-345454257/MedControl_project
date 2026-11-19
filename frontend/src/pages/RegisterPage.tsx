@@ -2,7 +2,8 @@ import { API_BASE_URL } from "../services/api";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { familyInviteHash } from "../services/family-invitation";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,6 +15,7 @@ export default function RegisterPage() {
   const [repeatPassword, setRepeatPassword] = useState("");
 
   const navigate = useNavigate();
+  const inviteHash = familyInviteHash(useLocation().hash);
 
   async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -41,7 +43,7 @@ export default function RegisterPage() {
 
       alert("Регистрация прошла успешно");
 
-      navigate("/login");
+      navigate({ pathname: "/login", hash: inviteHash });
     } catch (error) {
       console.error(error);
       alert("Не удалось подключиться к серверу");
@@ -212,12 +214,12 @@ export default function RegisterPage() {
 
             <p className="mt-6 text-center text-[14px] text-text-muted">
               Уже есть аккаунт?{" "}
-              <a
-                href="/login"
+              <Link
+                to={{ pathname: "/login", hash: inviteHash }}
                 className="text-text-muted underline decoration-transparent hover:text-olive-accent hover:decoration-current"
               >
                 Войти
-              </a>
+              </Link>
             </p>
           </div>
 

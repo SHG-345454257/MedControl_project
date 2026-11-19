@@ -2,13 +2,15 @@ import { API_BASE_URL } from "../services/api";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { familyInviteHash } from "../services/family-invitation";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const inviteHash = familyInviteHash(useLocation().hash);
 
   async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,7 +36,11 @@ export default function LoginPage() {
 
       localStorage.setItem("token", data.token);
 
-      navigate("/dashboard");
+      if (inviteHash) {
+        navigate({ pathname: "/family/invite", hash: inviteHash }, { replace: true });
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.error(error);
       alert("Не удалось подключиться к серверу");
@@ -133,12 +139,12 @@ export default function LoginPage() {
 
             <p className="mt-6 text-center text-[14px] text-text-muted">
               Нет аккаунта?{" "}
-              <a
-                href="/register"
+              <Link
+                to={{ pathname: "/register", hash: inviteHash }}
                 className="text-text-muted underline decoration-transparent hover:text-olive-accent hover:decoration-current"
               >
                 Зарегистрироваться
-              </a>
+              </Link>
             </p>
           </div>
 

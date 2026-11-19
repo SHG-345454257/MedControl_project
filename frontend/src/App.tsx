@@ -6,23 +6,12 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProfilePage from "./pages/ProfilePage";
 import FamilyPage from "./pages/FamilyPage";
+import FamilyInvitePage from "./pages/FamilyInvitePage";
 import StatisticsPage from "./pages/StatisticsPage";
 import MedicinePage from "./pages/MedicinePage";
 import MedicineDetailsPage from "./pages/MedicineDetailsPage";
 import CoursesPage from "./pages/CoursesPage";
-
-function hasActiveSession() {
-  const token = localStorage.getItem("token");
-  if (!token) return false;
-
-  try {
-    const [, payload] = token.split(".");
-    const { exp } = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
-    return typeof exp === "number" && exp * 1000 > Date.now();
-  } catch {
-    return false;
-  }
-}
+import { hasActiveSession } from "./services/session";
 
 function GuestRoutes() {
   return hasActiveSession() ? <Navigate to="/dashboard" replace /> : <Outlet />;
@@ -36,6 +25,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/family/invite" element={<FamilyInvitePage />} />
+
         <Route element={<GuestRoutes />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />

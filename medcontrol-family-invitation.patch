@@ -1,0 +1,288 @@
+diff --git a/frontend/src/App.tsx b/frontend/src/App.tsx
+index b5d5c2d..e91a488 100644
+--- a/frontend/src/App.tsx
++++ b/frontend/src/App.tsx
+@@ -6,23 +6,12 @@ import RegisterPage from "./pages/RegisterPage";
+ import DashboardPage from "./pages/DashboardPage";
+ import ProfilePage from "./pages/ProfilePage";
+ import FamilyPage from "./pages/FamilyPage";
++import FamilyInvitePage from "./pages/FamilyInvitePage";
+ import StatisticsPage from "./pages/StatisticsPage";
+ import MedicinePage from "./pages/MedicinePage";
+ import MedicineDetailsPage from "./pages/MedicineDetailsPage";
+ import CoursesPage from "./pages/CoursesPage";
+-
+-function hasActiveSession() {
+-  const token = localStorage.getItem("token");
+-  if (!token) return false;
+-
+-  try {
+-    const [, payload] = token.split(".");
+-    const { exp } = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+-    return typeof exp === "number" && exp * 1000 > Date.now();
+-  } catch {
+-    return false;
+-  }
+-}
++import { hasActiveSession } from "./services/session";
+ 
+ function GuestRoutes() {
+   return hasActiveSession() ? <Navigate to="/dashboard" replace /> : <Outlet />;
+@@ -36,6 +25,8 @@ function App() {
+   return (
+     <BrowserRouter>
+       <Routes>
++        <Route path="/family/invite" element={<FamilyInvitePage />} />
++
+         <Route element={<GuestRoutes />}>
+           <Route path="/" element={<HomePage />} />
+           <Route path="/login" element={<LoginPage />} />
+diff --git a/frontend/src/pages/FamilyInvitePage.tsx b/frontend/src/pages/FamilyInvitePage.tsx
+new file mode 100644
+index 0000000..c5cc818
+--- /dev/null
++++ b/frontend/src/pages/FamilyInvitePage.tsx
+@@ -0,0 +1,119 @@
++import { useRef, useState } from "react";
++import { Link, useLocation, useNavigate } from "react-router-dom";
++
++import { familyRequest } from "../api/family";
++import Footer from "../components/layout/Footer";
++import Header from "../components/layout/Header";
++import { familyInviteHash } from "../services/family-invitation";
++import { hasActiveSession } from "../services/session";
++
++const primaryAction =
++  "inline-flex min-h-11 items-center justify-center rounded-pill bg-olive-accent px-5 py-2 text-sm font-medium text-background transition hover:bg-green-accent hover:text-text-main disabled:cursor-not-allowed disabled:opacity-60";
++const secondaryAction =
++  "inline-flex min-h-11 items-center justify-center rounded-pill border border-olive-accent px-5 py-2 text-sm font-medium text-text-main transition hover:bg-green-bg";
++
++export default function FamilyInvitePage() {
++  const location = useLocation();
++  const inviteHash = familyInviteHash(location.hash);
++
++  // Reset request feedback when a different invitation is opened.
++  return <FamilyInvitation key={inviteHash} inviteHash={inviteHash} />;
++}
++
++function FamilyInvitation({ inviteHash }: { inviteHash: string }) {
++  const navigate = useNavigate();
++  const submitting = useRef(false);
++  const [busy, setBusy] = useState(false);
++  const [error, setError] = useState("");
++  const signedIn = hasActiveSession();
++  const login = { pathname: "/login", hash: inviteHash };
++
++  async function acceptInvitation() {
++    if (submitting.current) return;
++    submitting.current = true;
++    setBusy(true);
++    setError("");
++
++    try {
++      await familyRequest("/invitations/accept", {
++        method: "POST",
++        body: JSON.stringify({ token: inviteHash.slice(1) })
++      });
++      navigate("/family", { replace: true });
++    } catch (error) {
++      setError(error instanceof Error ? error.message : "Не удалось принять приглашение");
++    } finally {
++      submitting.current = false;
++      setBusy(false);
++    }
++  }
++
++  function switchAccount() {
++    localStorage.removeItem("token");
++    navigate(login, { replace: true });
++  }
++
++  return (
++    <div className="flex min-h-screen flex-col bg-background-soft">
++      <Header showActions={false} />
++
++      <main className="flex flex-1 items-center justify-center px-5 py-12">
++        <section
++          aria-labelledby="invitation-heading"
++          className="w-full max-w-lg rounded-card bg-card p-6 shadow-card sm:p-8"
++        >
++          <img src="/images/family/people.svg" alt="" className="mb-4 h-12 w-12 object-contain" />
++          <h1 id="invitation-heading" className="font-heading text-2xl font-bold text-text-main sm:text-[32px]">
++            Семейный доступ
++          </h1>
++
++          {!inviteHash ? (
++            <>
++              <p className="mt-3 text-text-secondary" role="alert">
++                Ссылка неполная или повреждена. Попросите отправителя прислать новое приглашение.
++              </p>
++              <Link to={signedIn ? "/family" : "/"} className={`mt-6 ${secondaryAction}`}>
++                {signedIn ? "К семейному доступу" : "На главную"}
++              </Link>
++            </>
++          ) : (
++            <>
++              <p className="mt-3 text-text-secondary">
++                Вас пригласили просматривать календарь приёмов близкого. Используйте аккаунт
++                с адресом электронной почты, на который отправили приглашение.
++              </p>
++              {error && <p className="mt-4 text-sm text-text-main" role="alert">{error}</p>}
++
++              <div className="mt-6 flex flex-wrap gap-3">
++                {signedIn ? (
++                  <>
++                    <button type="button" onClick={() => void acceptInvitation()} disabled={busy} className={primaryAction}>
++                      {busy ? "Принимаем приглашение…" : "Принять приглашение"}
++                    </button>
++                    <button
++                      type="button"
++                      onClick={switchAccount}
++                      disabled={busy}
++                      className={`${secondaryAction} disabled:cursor-not-allowed disabled:opacity-60`}
++                    >
++                      Войти в другой аккаунт
++                    </button>
++                  </>
++                ) : (
++                  <>
++                    <Link to={login} className={primaryAction}>Войти</Link>
++                    <Link to={{ pathname: "/register", hash: inviteHash }} className={secondaryAction}>
++                      Зарегистрироваться
++                    </Link>
++                  </>
++                )}
++              </div>
++            </>
++          )}
++        </section>
++      </main>
++
++      <Footer />
++    </div>
++  );
++}
+diff --git a/frontend/src/pages/LoginPage.tsx b/frontend/src/pages/LoginPage.tsx
+index 13c0d9c..0d7891c 100644
+--- a/frontend/src/pages/LoginPage.tsx
++++ b/frontend/src/pages/LoginPage.tsx
+@@ -2,13 +2,15 @@ import { API_BASE_URL } from "../services/api";
+ import Header from "../components/layout/Header";
+ import Footer from "../components/layout/Footer";
+ import { useState, type FormEvent } from "react";
+-import { useNavigate } from "react-router-dom";
++import { Link, useLocation, useNavigate } from "react-router-dom";
++import { familyInviteHash } from "../services/family-invitation";
+ 
+ export default function LoginPage() {
+   const [showPassword, setShowPassword] = useState(false);
+   const [email, setEmail] = useState("");
+   const [password, setPassword] = useState("");
+   const navigate = useNavigate();
++  const inviteHash = familyInviteHash(useLocation().hash);
+ 
+   async function handleLogin(e: FormEvent<HTMLFormElement>) {
+     e.preventDefault();
+@@ -34,7 +36,11 @@ export default function LoginPage() {
+ 
+       localStorage.setItem("token", data.token);
+ 
+-      navigate("/dashboard");
++      if (inviteHash) {
++        navigate({ pathname: "/family/invite", hash: inviteHash }, { replace: true });
++      } else {
++        navigate("/dashboard");
++      }
+     } catch (error) {
+       console.error(error);
+       alert("Не удалось подключиться к серверу");
+@@ -133,12 +139,12 @@ export default function LoginPage() {
+ 
+             <p className="mt-6 text-center text-[14px] text-text-muted">
+               Нет аккаунта?{" "}
+-              <a
+-                href="/register"
++              <Link
++                to={{ pathname: "/register", hash: inviteHash }}
+                 className="text-text-muted underline decoration-transparent hover:text-olive-accent hover:decoration-current"
+               >
+                 Зарегистрироваться
+-              </a>
++              </Link>
+             </p>
+           </div>
+ 
+diff --git a/frontend/src/pages/RegisterPage.tsx b/frontend/src/pages/RegisterPage.tsx
+index b3fed56..dc9350f 100644
+--- a/frontend/src/pages/RegisterPage.tsx
++++ b/frontend/src/pages/RegisterPage.tsx
+@@ -2,7 +2,8 @@ import { API_BASE_URL } from "../services/api";
+ import Header from "../components/layout/Header";
+ import Footer from "../components/layout/Footer";
+ import { useState, type FormEvent } from "react";
+-import { useNavigate } from "react-router-dom";
++import { Link, useLocation, useNavigate } from "react-router-dom";
++import { familyInviteHash } from "../services/family-invitation";
+ 
+ export default function RegisterPage() {
+   const [showPassword, setShowPassword] = useState(false);
+@@ -14,6 +15,7 @@ export default function RegisterPage() {
+   const [repeatPassword, setRepeatPassword] = useState("");
+ 
+   const navigate = useNavigate();
++  const inviteHash = familyInviteHash(useLocation().hash);
+ 
+   async function handleRegister(e: FormEvent<HTMLFormElement>) {
+     e.preventDefault();
+@@ -41,7 +43,7 @@ export default function RegisterPage() {
+ 
+       alert("Регистрация прошла успешно");
+ 
+-      navigate("/login");
++      navigate({ pathname: "/login", hash: inviteHash });
+     } catch (error) {
+       console.error(error);
+       alert("Не удалось подключиться к серверу");
+@@ -212,12 +214,12 @@ export default function RegisterPage() {
+ 
+             <p className="mt-6 text-center text-[14px] text-text-muted">
+               Уже есть аккаунт?{" "}
+-              <a
+-                href="/login"
++              <Link
++                to={{ pathname: "/login", hash: inviteHash }}
+                 className="text-text-muted underline decoration-transparent hover:text-olive-accent hover:decoration-current"
+               >
+                 Войти
+-              </a>
++              </Link>
+             </p>
+           </div>
+ 
+diff --git a/frontend/src/services/family-invitation.ts b/frontend/src/services/family-invitation.ts
+new file mode 100644
+index 0000000..194cb33
+--- /dev/null
++++ b/frontend/src/services/family-invitation.ts
+@@ -0,0 +1,3 @@
++export function familyInviteHash(hash: string) {
++  return /^#[a-f0-9]{64}$/.test(hash) ? hash : "";
++}
+diff --git a/frontend/src/services/session.ts b/frontend/src/services/session.ts
+new file mode 100644
+index 0000000..89e035d
+--- /dev/null
++++ b/frontend/src/services/session.ts
+@@ -0,0 +1,12 @@
++export function hasActiveSession() {
++  const token = localStorage.getItem("token");
++  if (!token) return false;
++
++  try {
++    const [, payload] = token.split(".");
++    const { exp } = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
++    return typeof exp === "number" && exp * 1000 > Date.now();
++  } catch {
++    return false;
++  }
++}
