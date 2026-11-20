@@ -33,7 +33,7 @@ export async function getTodayDoses(userId, profileId, day = scheduleNow()) {
     where: {
       scheduledAt: todayRange(day),
       courseMedicine: {
-        course: { profile: profileFilter }
+        course: { profile: profileFilter, status: { not: "ARCHIVED" } }
       }
     },
     include: {

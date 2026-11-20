@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../config/prisma.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
+import { ensureCourseDosesForToday } from "../services/course-schedule.js";
 import { dateKey, scheduleNow, startOfScheduleDay, startOfScheduleWeek } from "../services/schedule-clock.js";
 
 const router = Router();
@@ -56,6 +57,8 @@ router.get("/", authMiddleware, async (req, res, next) => {
     }
 
     const now = scheduleNow();
+    const profileFilter = { ownerId: req.userId };
+    await ensureCourseDosesForToday(profileFilter, now);
     const year = now.getUTCFullYear();
     const weekStart = startOfScheduleWeek(now);
 
@@ -73,7 +76,7 @@ router.get("/", authMiddleware, async (req, res, next) => {
     const doses = await prisma.scheduledDose.findMany({
       where: {
         status: { in: ["TAKEN", "MISSED", "PLANNED", "SKIPPED"] },
-        courseMedicine: { course: { profile: { ownerId: req.userId } } },
+        courseMedicine: { course: { profile: profileFilter, status: { not: "ARCHIVED" } } },
         OR: [
           { scheduledAt: { gte: boundaries[0], lt: boundaries[bucketCount] } },
           { scheduledAt: { gte: monthStart, lt: monthEnd } }
@@ -102,7 +105,7 @@ router.get("/", authMiddleware, async (req, res, next) => {
 
       if (index >= 0 && status === "TAKEN") buckets[index].taken++;
       if (index >= 0 && status === "MISSED") buckets[index].missed++;
-      if (period === "year" && index >= 0 && status === "PLANNED") {
+      if (index >= 0 && status === "PLANNED") {
         buckets[index].planned++;
       }
 
@@ -118,7 +121,7 @@ router.get("/", authMiddleware, async (req, res, next) => {
     if (period === "year") {
       const courses = await prisma.treatmentCourse.findMany({
         where: {
-          profile: { ownerId: req.userId },
+          profile: profileFilter,
           status: "ACTIVE",
           startDate: { lt: new Date(Date.UTC(year + 1, 0, 1)) },
           OR: [

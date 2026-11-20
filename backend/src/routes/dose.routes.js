@@ -22,7 +22,9 @@ router.patch("/:id/status", authMiddleware, async (req, res, next) => {
     const result = await prisma.$transaction(async (db) => {
       const where = {
         id: req.params.id,
-        courseMedicine: { course: { profile: { ownerId: req.userId } } }
+        courseMedicine: {
+          course: { profile: { ownerId: req.userId }, status: { not: "ARCHIVED" } }
+        }
       };
       const dose = await db.scheduledDose.findFirst({
         where,

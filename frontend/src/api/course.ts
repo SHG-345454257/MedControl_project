@@ -22,7 +22,7 @@ export type Course = Omit<CourseInput, "note" | "endDate" | "medicines"> & {
   endDate: string | null;
   status: "ACTIVE" | "PAUSED" | "COMPLETED" | "ARCHIVED";
   medicines: (CourseMedicineInput & { name: string; form: string })[];
-  week: { taken: number; missed: number }[];
+  week: { taken: number; missed: number; planned?: number }[];
 };
 
 export async function courseRequest<T>(path = "", options: RequestInit = {}): Promise<T> {

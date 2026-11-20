@@ -58,7 +58,7 @@ export async function getFamily(userId) {
     where: {
       scheduledAt: todayRange(),
       courseMedicine: {
-        course: { profile: visibleProfiles(userId) }
+        course: { profile: visibleProfiles(userId), status: { not: "ARCHIVED" } }
       }
     },
     select: {

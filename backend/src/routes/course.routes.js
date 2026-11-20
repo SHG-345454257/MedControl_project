@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { prisma } from "../config/prisma.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
-import { scheduleCourseDay } from "../services/course-schedule.js";
-import { scheduleNow, startOfScheduleWeek } from "../services/schedule-clock.js";
+import { ensureCourseDosesForToday, scheduleCourseDay } from "../services/course-schedule.js";
+import { scheduleNow, startOfScheduleDay, startOfScheduleWeek } from "../services/schedule-clock.js";
 
 const router = Router();
 router.use(authMiddleware);
@@ -84,6 +84,7 @@ router.get("/", async (req, res, next) => {
     });
 
     const today = scheduleNow();
+    await ensureCourseDosesForToday({ ownerId: req.userId }, today);
     const week = startOfScheduleWeek(today);
     const nextWeek = new Date(week);
     nextWeek.setUTCDate(week.getUTCDate() + 7);
@@ -91,10 +92,7 @@ router.get("/", async (req, res, next) => {
       where: {
         courseMedicine: { course: owned(req.userId) },
         scheduledAt: { gte: week, lt: nextWeek },
-        OR: [
-          { status: { in: ["TAKEN", "MISSED"] } },
-          { status: "PLANNED", scheduledAt: { lte: today } }
-        ]
+        status: { in: ["TAKEN", "MISSED", "PLANNED"] }
       },
       select: {
         scheduledAt: true, status: true,
@@ -104,9 +102,12 @@ router.get("/", async (req, res, next) => {
     const totals = new Map();
     for (const dose of doses) {
       const id = dose.courseMedicine.courseId;
-      const days = totals.get(id) ?? Array.from({ length: 7 }, () => ({ taken: 0, missed: 0 }));
+      const days = totals.get(id) ?? Array.from({ length: 7 }, () => ({
+        taken: 0, missed: 0, planned: 0
+      }));
       const bucket = days[(dose.scheduledAt.getUTCDay() + 6) % 7];
       if (dose.status === "TAKEN") bucket.taken++;
+      else if (dose.status === "PLANNED" && dose.scheduledAt > today) bucket.planned++;
       else bucket.missed++;
       totals.set(id, days);
     }
@@ -197,7 +198,7 @@ router.delete("/:id", async (req, res, next) => {
       await db.scheduledDose.deleteMany({
         where: {
           courseMedicine: { courseId: req.params.id },
-          status: "PLANNED", scheduledAt: { gte: scheduleNow() }
+          status: "PLANNED", scheduledAt: { gte: startOfScheduleDay(scheduleNow()) }
         }
       });
     });

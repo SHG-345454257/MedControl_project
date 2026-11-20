@@ -16,8 +16,9 @@ export default function CourseCard({
   onRemove: () => void;
 }) {
   const totals = course.week.reduce((sum, day) => ({
-    taken: sum.taken + day.taken, planned: sum.planned + day.taken + day.missed
-  }), { taken: 0, planned: 0 });
+    taken: sum.taken + day.taken,
+    count: sum.count + day.taken + day.missed + (day.planned ?? 0)
+  }), { taken: 0, count: 0 });
   const elapsed = Date.parse(localDate()) - Date.parse(course.startDate);
   const duration = course.endDate ? Date.parse(course.endDate) - Date.parse(course.startDate) : null;
   const progress = duration === null ? null : Math.min(100, Math.max(0,
@@ -69,12 +70,12 @@ export default function CourseCard({
       <div className="min-w-0 md:pl-5">
         <h3 className="font-heading font-bold">Успеваемость курса</h3>
         <p className="mt-1 text-xs text-text-secondary">
-          {totals.planned ? `За неделю: ${Math.round(totals.taken / totals.planned * 100)}%` : "Нет отмеченных приёмов"}
+          {totals.count ? `За неделю: ${Math.round(totals.taken / totals.count * 100)}%` : "Нет приёмов за неделю"}
         </p>
         <div className="mt-5 flex gap-1 text-center" aria-label="Приёмы за текущую неделю" role="list">
           {days.map((day, index) => {
             const record = course.week[index];
-            const total = record ? record.taken + record.missed : 0;
+            const total = record ? record.taken + record.missed + (record.planned ?? 0) : 0;
             const percent = total ? Math.round(record.taken / total * 100) : null;
             return (
               <div key={day} role="listitem" aria-label={`${day}, ${percent === null ? "нет данных" : `${percent}%`}`} className="min-w-0 flex-1 text-[10px]">
