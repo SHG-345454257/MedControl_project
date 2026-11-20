@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import { useState } from "react";
 
 const navigationLinks = [
@@ -22,24 +24,26 @@ export default function AppHeader({
       <div className="mx-auto flex min-h-[62px] max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
 
         {/* Логотип */}
-        <a href="/" className="flex shrink-0 items-center gap-2">
+        <Link to="/" className="flex shrink-0 items-center gap-2">
           <img
             src="/images/layout/logo.png"
             alt="Логотип МедКонтроль"
+            width={52}
+            height={52}
             className="h-[52px] w-[52px] object-contain"
           />
 
           <span className="font-heading text-[20px] font-bold text-text-main sm:text-[26px]">
             МедКонтроль
           </span>
-        </a>
+        </Link>
 
         {/* Навигация для компьютера */}
         <nav className="group hidden items-center gap-6 md:flex">
           {navigationLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
-              href={link.href}
+              to={link.href}
               className={`whitespace-nowrap border-b-2 px-0.5 py-1 text-[14px] font-heading text-text-main transition ${
                 activePage === link.title
                   ? "border-olive-accent group-hover:border-transparent"
@@ -47,13 +51,13 @@ export default function AppHeader({
               }`}
             >
               {link.title}
-            </a>
+            </Link>
           ))}
         </nav>
 
         {/* Профиль */}
-        <a
-          href="/profile"
+        <Link
+          to="/profile"
           aria-label="Личный кабинет"
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-lilac-bg transition hover:bg-lilac-light"
         >
@@ -62,7 +66,7 @@ export default function AppHeader({
             alt=""
             className="h-6 w-6 object-contain"
           />
-        </a>
+        </Link>
 
         {/* Мобильное меню */}
         <button
@@ -82,14 +86,14 @@ export default function AppHeader({
       {menuOpen && (
         <nav className="absolute left-0 top-full flex w-full flex-col gap-1 border-t border-background-soft bg-background px-5 py-3 shadow-card md:hidden">
           {navigationLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
-              href={link.href}
+              to={link.href}
               onClick={() => setMenuOpen(false)}
               className="rounded-xl px-4 py-3 text-[15px] text-text-main transition hover:bg-green-bg"
             >
               {link.title}
-            </a>
+            </Link>
           ))}
         </nav>
       )}

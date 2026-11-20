@@ -9,17 +9,19 @@ export default function Header({ showActions = true }: HeaderProps) {
     <header className="w-full bg-background">
       <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
         {/* Логотип и название */}
-        <a href="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <img
             src="/images/layout/logo.png"
             alt="Логотип МедКонтроль"
+            width={52}
+            height={52}
             className="h-13 w-13 object-contain"
           />
 
           <span className="font-heading text-[20px] font-bold text-text-main sm:text-[26px]">
             МедКонтроль
           </span>
-        </a>
+        </Link>
 
         {/* Кнопки входа и регистрации */}
         {showActions && (

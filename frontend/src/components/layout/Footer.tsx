@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Footer() {
   return (
     <footer className="w-full bg-background">
@@ -7,20 +9,22 @@ export default function Footer() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
 
           {/* Логотип */}
-          <a
-            href="/"
+          <Link
+            to="/"
             className="flex shrink-0 items-center gap-2"
           >
             <img
               src="/images/layout/logo.png"
               alt="Логотип МедКонтроль"
+              width={44}
+              height={44}
               className="h-11 w-11 object-contain"
             />
 
             <span className="font-heading text-[20px] font-bold text-text-main">
               МедКонтроль
             </span>
-          </a>
+          </Link>
 
           {/* Ссылки */}
           <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 text-[16px] text-text-muted">

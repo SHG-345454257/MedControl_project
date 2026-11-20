@@ -24,9 +24,10 @@ export function visibleProfiles(userId) {
 }
 
 export async function getFamily(userId) {
-  const [profiles, invitations] = await Promise.all([
+  const profileFilter = visibleProfiles(userId);
+  const [profiles, invitations, doses] = await Promise.all([
     prisma.healthProfile.findMany({
-      where: visibleProfiles(userId),
+      where: profileFilter,
       orderBy: [{ isPrimary: "desc" }, { name: "asc" }],
       select: {
         id: true,
@@ -51,23 +52,22 @@ export async function getFamily(userId) {
         invitedEmail: true,
         status: true
       }
+    }),
+    prisma.scheduledDose.findMany({
+      where: {
+        scheduledAt: todayRange(),
+        courseMedicine: {
+          course: { profile: profileFilter, status: { not: "ARCHIVED" } }
+        }
+      },
+      select: {
+        status: true,
+        courseMedicine: {
+          select: { course: { select: { profileId: true } } }
+        }
+      }
     })
   ]);
-
-  const doses = await prisma.scheduledDose.findMany({
-    where: {
-      scheduledAt: todayRange(),
-      courseMedicine: {
-        course: { profile: visibleProfiles(userId), status: { not: "ARCHIVED" } }
-      }
-    },
-    select: {
-      status: true,
-      courseMedicine: {
-        select: { course: { select: { profileId: true } } }
-      }
-    }
-  });
 
   const statsByProfile = new Map();
 
