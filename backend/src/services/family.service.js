@@ -119,7 +119,7 @@ export async function createFamilyInvitation(userId, inputEmail) {
   const [user, profile] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
-      select: { email: true }
+      select: { email: true, name: true }
     }),
     prisma.healthProfile.findFirst({
       where: { ownerId: userId, isPrimary: true },
@@ -151,7 +151,7 @@ export async function createFamilyInvitation(userId, inputEmail) {
     }
   });
 
-  return { token, expiresAt };
+  return { token, expiresAt, recipient: email, inviter: user };
 }
 
 export async function acceptFamilyInvitation(userId, token) {

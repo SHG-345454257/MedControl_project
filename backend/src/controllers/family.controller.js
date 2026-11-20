@@ -4,6 +4,7 @@ import {
   acceptFamilyInvitation,
   revokeFamilyInvitation
 } from "../services/family.service.js";
+import { sendFamilyInvitationEmail } from "../services/family-invitation-mail.js";
 
 export async function getFamilyPage(req, res, next) {
   try {
@@ -15,12 +16,13 @@ export async function getFamilyPage(req, res, next) {
 
 export async function createInvitation(req, res, next) {
   try {
-    const invitation = await createFamilyInvitation(
+    const { token, expiresAt, recipient, inviter } = await createFamilyInvitation(
       req.userId,
       req.body?.email
     );
 
-    res.status(201).json({ status: "success", ...invitation });
+    const mailStatus = await sendFamilyInvitationEmail(recipient, token, inviter);
+    res.status(201).json({ status: "success", token, expiresAt, mailStatus });
   } catch (error) {
     next(error);
   }

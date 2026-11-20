@@ -28,6 +28,12 @@ type FamilyData = {
   invitations: Invitation[];
 };
 
+const mailFeedback = {
+  sent: "Письмо с приглашением отправлено.",
+  not_configured: "Отправка писем не настроена. Скопируйте ссылку и передайте её близкому.",
+  failed: "Не удалось отправить письмо. Приглашение создано, ссылку можно скопировать."
+};
+
 const buttonClass =
   "inline-flex min-h-10 items-center justify-center rounded-pill " +
   "bg-olive-accent px-4 py-3 text-[14px] font-medium text-background " +
@@ -76,7 +82,10 @@ export default function FamilyPage() {
 
     try {
       const recipient = email.trim().toLowerCase();
-      const { token } = await familyRequest<{ token: string }>(
+      const { token, mailStatus } = await familyRequest<{
+        token: string;
+        mailStatus: keyof typeof mailFeedback;
+      }>(
         "/invitations",
         {
           method: "POST",
@@ -92,8 +101,14 @@ export default function FamilyPage() {
         ).href
       });
 
-      setData(await familyRequest<FamilyData>());
-      setLoadError("");
+      setFeedback(mailFeedback[mailStatus] ?? mailFeedback.not_configured);
+
+      try {
+        setData(await familyRequest<FamilyData>());
+        setLoadError("");
+      } catch (error) {
+        setLoadError((error as Error).message);
+      }
     } catch (error) {
       setFeedback((error as Error).message);
     } finally {
@@ -139,16 +154,6 @@ export default function FamilyPage() {
       setBusy(false);
     }
   }
-
-  const mailHref = invitation
-    ? `mailto:${encodeURIComponent(invitation.email)}?subject=${
-        encodeURIComponent("Приглашение в МедКонтроль")
-      }&body=${
-        encodeURIComponent(
-          `Привет! Даю тебе доступ к моему календарю приёмов:\n\n${invitation.url}`
-        )
-      }`
-    : null;
 
   return (
     <div className="flex min-h-screen flex-col bg-background-soft">
@@ -344,20 +349,9 @@ export default function FamilyPage() {
                 disabled={busy}
                 className={`${buttonClass} mt-5 w-full`}
               >
-                {busy ? "Создаём ссылку…" : "Создать ссылку"}
+                {busy ? "Подождите…" : "Отправить приглашение"}
               </button>
             </form>
-
-            {mailHref && (
-              <a className={`${buttonClass} mt-3 w-full`} href={mailHref}>
-                Открыть письмо
-                <img
-                  src="/images/arrow.svg"
-                  alt=""
-                  className="ml-2 h-4 w-4 shrink-0 object-contain"
-                />
-              </a>
-            )}
 
             {feedback && (
               <p role="status" className="mt-3 text-sm">
