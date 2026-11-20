@@ -166,26 +166,26 @@ export default function HomePage() {
         ========================== */}
         <section className="w-full bg-background">
           <div className="mx-auto w-full max-w-[1400px] px-6 sm:px-8 lg:px-10 xl:px-0">
-            <div className="relative min-h-[330px] overflow-hidden rounded-card bg-lilac-bg">
+            <div className="relative overflow-hidden rounded-card bg-lilac-bg lg:min-h-[330px]">
 
               {/* Весь баннер — одна картинка */}
               <img
                 src="/images/home/main-banner-2.svg"
                 alt=""
-                className="absolute inset-0 h-full w-[90%] object-cover object-[70%_10%]"
+                className="absolute inset-0 hidden h-full w-[90%] object-cover object-[70%_10%] lg:block"
               />
 
               {/* Текст поверх картинки */}
-              <div className="relative z-10 flex min-h-[330px] items-center">
-                <div className="ml-[32%] max-w-[590px] px-6 py-10 lg:ml-[31%] lg:px-0">
+              <div className="relative z-10 flex items-center lg:min-h-[330px]">
+                <div className="max-w-[590px] px-6 py-8 sm:px-8 lg:ml-[31%] lg:px-0 lg:py-10">
 
                   <div className="mb-5 inline-flex rounded-pill bg-olive-accent px-5 py-2 text-[12px] text-white">
                     Просто. Удобно. Для вас.
                   </div>
 
-                  <h2 className="font-heading text-[36px] font-bold leading-[1.15] text-text-main lg:text-[42px]">
-                    Контроль здоровья в
-                    <br />
+                  <h2 className="font-heading text-[28px] font-bold leading-[1.15] text-text-main sm:text-[36px] lg:text-[42px]">
+                    Контроль здоровья в{" "}
+                    <br className="hidden lg:inline" />
                     вашем телефоне
                   </h2>
 
@@ -255,7 +255,7 @@ export default function HomePage() {
               <img
                 src="/images/home/main-banner-3.svg"
                 alt=""
-                className="absolute bottom-0 right-0 h-[80%] w-full object-contain object-right-bottom"
+                className="absolute bottom-0 right-0 h-[80%] w-full object-contain object-right-bottom opacity-25 lg:opacity-100"
               />
 
               <div className="relative z-10 max-w-[560px] px-8 py-10 lg:px-10">

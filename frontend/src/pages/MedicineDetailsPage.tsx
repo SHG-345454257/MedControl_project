@@ -24,8 +24,8 @@ function MedicineDetails({ medicine, offers, offerSources, pharmacyCatalogs }: M
 
   return (
     <>
-      <div className="grid items-start gap-5 sm:grid-cols-[160px_minmax(0,1fr)] lg:grid-cols-[160px_minmax(0,1fr)_minmax(0,1.5fr)]">
-        <div className="relative grid aspect-square w-40 place-items-center overflow-hidden rounded-card bg-card">
+      <div className="grid grid-cols-[clamp(5.5rem,28vw,10rem)_minmax(0,1fr)] gap-x-3 gap-y-4 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-start sm:gap-5 lg:grid-cols-[160px_minmax(0,1fr)_minmax(0,1.5fr)]">
+        <div className="relative grid min-h-[clamp(5.5rem,28vw,10rem)] place-items-center overflow-hidden rounded-card bg-card sm:aspect-square sm:min-h-0">
           {photo ? (
             <img
               src={photo}
@@ -34,25 +34,29 @@ function MedicineDetails({ medicine, offers, offerSources, pharmacyCatalogs }: M
               onError={() => setFailedImage(photo)}
             />
           ) : (
-            <img src={medicineIcon(medicine.form)} alt="" className="size-16 object-contain" />
+            <img src={medicineIcon(medicine.form)} alt="" className="size-10 object-contain sm:size-16" />
           )}
         </div>
 
-        <div>
-          <h1 className="break-words font-heading text-[32px] font-bold leading-tight">{medicine.name}</h1>
-          <p className="mt-1 text-sm text-text-secondary">
-            {medicineForms[medicine.form]}
-            {medicine.strengthValue && `, ${medicine.strengthValue} ${medicine.strengthUnit ?? ""}`}
-          </p>
-          <p className="mt-5 text-sm text-text-secondary">
-            Остаток в аптечке: <strong>{medicine.quantity} {medicine.quantityUnit}</strong>
-          </p>
-          {medicine.expiryDate && (
-            <p className="mt-2 text-sm text-text-secondary">Годен до {medicine.expiryDate.split("-").reverse().join(".")}</p>
-          )}
+        <div className="flex min-w-0 flex-col justify-between gap-2 sm:justify-start sm:gap-5">
+          <div>
+            <h1 className="break-words font-heading text-[clamp(1.25rem,5vw,2rem)] font-bold leading-tight">{medicine.name}</h1>
+            <p className="mt-1 text-sm text-text-secondary">
+              {medicineForms[medicine.form]}
+              {medicine.strengthValue && `, ${medicine.strengthValue} ${medicine.strengthUnit ?? ""}`}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-text-secondary">
+              Остаток в аптечке: <strong>{medicine.quantity} {medicine.quantityUnit}</strong>
+            </p>
+            {medicine.expiryDate && (
+              <p className="mt-1 text-sm text-text-secondary sm:mt-2">Годен до {medicine.expiryDate.split("-").reverse().join(".")}</p>
+            )}
+          </div>
         </div>
 
-        <div className="sm:col-span-2 lg:col-span-1">
+        <div className="col-span-2 lg:col-span-1">
           <div className="flex flex-wrap gap-2">
             {badges.filter((badge) => badge.active).map((badge) => (
               <span key={badge.icon} className="inline-flex items-center gap-2 rounded-pill bg-warning/20 px-2 py-1 text-xs">
