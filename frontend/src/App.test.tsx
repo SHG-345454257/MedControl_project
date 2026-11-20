@@ -8,7 +8,8 @@ describe("MedControl App", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: "Контроль приёма лекарств"
+        level: 1,
+        name: /^Ваш личный помощник\s*в мире лекарств$/
       })
     ).toBeTruthy();
   });
