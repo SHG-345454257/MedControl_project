@@ -73,17 +73,21 @@ export default function HomePage() {
         ========================== */}
         <section className="w-full bg-background">
           <div className="mx-auto w-full max-w-[1600px]">
-            <div className="relative min-h-[520px] overflow-hidden bg-background-soft">
+            <div className="relative overflow-hidden bg-background-soft">
+              <div
+                className="pointer-events-none absolute inset-y-0 right-0 w-[52%] bg-contain bg-right-bottom bg-no-repeat md:bg-[url(/images/home/main-banner-1.webp)]"
+                aria-hidden="true"
+              />
 
               {/* Левая часть */}
-              <div className="relative z-10 mx-auto flex h-full min-h-[520px] w-full max-w-[1400px] items-center px-6 py-14 sm:px-10 lg:px-16 xl:px-20">
+              <div className="relative z-10 mx-auto flex w-full max-w-[1400px] items-center px-6 py-10 sm:px-10 md:min-h-[520px] md:py-14 lg:px-16 xl:px-20">
 
-                <div className="w-full max-w-[500px]">
+                <div className="w-full max-w-[500px] md:w-[46%]">
                   <div className="mb-5 inline-flex rounded-pill bg-lilac-light px-4 py-2 text-[12px] text-text-secondary">
                     Забота о здоровье — проще, чем кажется
                   </div>
 
-                  <h1 className="font-heading text-[36px] font-bold leading-[1.15] text-text-main sm:text-[42px] lg:text-[48px]">
+                  <h1 className="font-heading text-[30px] font-bold leading-[1.15] text-text-main sm:text-[42px] lg:text-[48px]">
                     Ваш личный помощник
                     <br />
                     в мире лекарств
@@ -107,15 +111,6 @@ export default function HomePage() {
                       className="h-[22px] w-[22px] object-contain"
                     />
                   </Link>
-                </div>
-
-                {/* Картинка первого баннера */}
-                <div className="absolute bottom-0 right-0 h-full w-[58%] overflow-hidden">
-                  <img
-                    src="/images/home/main-banner-1.svg"
-                    alt=""
-                    className="absolute bottom-0 right-0 h-full w-full object-contain object-right-bottom"
-                  />
                 </div>
               </div>
             </div>
@@ -170,8 +165,11 @@ export default function HomePage() {
 
               {/* Весь баннер — одна картинка */}
               <img
-                src="/images/home/main-banner-2.svg"
+                src="/images/home/main-banner-2.webp"
                 alt=""
+                width={1344}
+                height={512}
+                loading="lazy"
                 className="absolute inset-0 hidden h-full w-[90%] object-cover object-[70%_10%] lg:block"
               />
 
@@ -253,8 +251,11 @@ export default function HomePage() {
             <div className="relative min-h-[250px] overflow-hidden rounded-card bg-background-soft">
 
               <img
-                src="/images/home/main-banner-3.svg"
+                src="/images/home/main-banner-3.webp"
                 alt=""
+                width={869}
+                height={276}
+                loading="lazy"
                 className="absolute bottom-0 right-0 h-[80%] w-full object-contain object-right-bottom opacity-25 lg:opacity-100"
               />
 

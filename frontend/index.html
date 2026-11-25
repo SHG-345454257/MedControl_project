@@ -8,6 +8,17 @@
       content="MedControl — приложение для учёта лекарств, управления курсами лечения и контроля расписания приёма препаратов."
     />
     <title>MedControl — учёт и контроль приёма лекарств</title>
+    <script>
+      if (location.pathname === "/" && matchMedia("(min-width: 48rem)").matches) {
+        const bannerPreload = document.createElement("link");
+        bannerPreload.rel = "preload";
+        bannerPreload.as = "image";
+        bannerPreload.type = "image/webp";
+        bannerPreload.href = "/images/home/main-banner-1.webp";
+        bannerPreload.fetchPriority = "high";
+        document.head.append(bannerPreload);
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

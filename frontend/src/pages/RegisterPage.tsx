@@ -62,7 +62,7 @@ export default function RegisterPage() {
           <img
             src="/images/enter/leaves.svg"
             alt=""
-            className="absolute bottom-[+180px] left-1/2 z-0 h-auto w-auto -translate-x-1/2 scale-[1.6] scale-x-[2.0]"
+            className="absolute bottom-[+180px] left-1/2 z-0 pointer-events-none h-auto w-[calc(100%+2rem)] max-w-none -translate-x-1/2 lg:w-auto lg:max-w-full lg:scale-[1.6] lg:scale-x-[2.0]"
           />
 
           {/* Карточка — передний слой */}
@@ -78,9 +78,9 @@ export default function RegisterPage() {
             <form className="mt-4" onSubmit={handleRegister}>
 
               {/* Имя */}
-              <h1 className="font-heading text-[16px] font-bold text-text-main">
+              <label htmlFor="register-name" className="block font-heading text-[16px] font-bold text-text-main">
                 Имя
-              </h1>
+              </label>
 
               <div className="mt-2 flex h-[48px] items-center rounded-input border border-text-muted bg-background px-4">
                 <img
@@ -90,18 +90,19 @@ export default function RegisterPage() {
                 />
 
                 <input
+                  id="register-name"
                   type="text"
                   placeholder="Введите ваше имя"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="h-full flex-1 bg-transparent text-text-muted outline-none placeholder:text-text-muted"
+                  className="h-full min-w-0 flex-1 bg-transparent text-text-muted outline-none placeholder:text-text-muted"
                 />
               </div>
 
               {/* Email */}
-              <h1 className="mt-4 font-heading text-[16px] font-bold text-text-main">
+              <label htmlFor="register-email" className="block mt-4 font-heading text-[16px] font-bold text-text-main">
                 Email
-              </h1>
+              </label>
 
               <div className="mt-2 flex h-[48px] items-center rounded-input border border-text-muted bg-background px-4">
                 <img
@@ -111,18 +112,19 @@ export default function RegisterPage() {
                 />
 
                 <input
+                  id="register-email"
                   type="email"
                   placeholder="example@mail.ru"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-full flex-1 bg-transparent text-text-muted outline-none placeholder:text-text-muted"
+                  className="h-full min-w-0 flex-1 bg-transparent text-text-muted outline-none placeholder:text-text-muted"
                 />
               </div>
 
               {/* Пароль */}
-              <h1 className="mt-4 font-heading text-[16px] font-bold text-text-main">
+              <label htmlFor="register-password" className="block mt-4 font-heading text-[16px] font-bold text-text-main">
                 Пароль
-              </h1>
+              </label>
 
               <div className="mt-2 flex h-[48px] items-center rounded-input border border-text-muted bg-background px-4">
                 <img
@@ -132,11 +134,12 @@ export default function RegisterPage() {
                 />
 
                 <input
+                  id="register-password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Придумайте пароль"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-full flex-1 bg-transparent text-text-muted outline-none placeholder:text-text-muted"
+                  className="h-full min-w-0 flex-1 bg-transparent text-text-muted outline-none placeholder:text-text-muted"
                 />
 
                 <button
@@ -161,9 +164,9 @@ export default function RegisterPage() {
               </div>
 
               {/* Повторите пароль */}
-              <h1 className="mt-4 font-heading text-[16px] font-bold text-text-main">
+              <label htmlFor="register-password-confirmation" className="block mt-4 font-heading text-[16px] font-bold text-text-main">
                 Повторите пароль
-              </h1>
+              </label>
 
               <div className="mt-2 flex h-[48px] items-center rounded-input border border-text-muted bg-background px-4">
                 <img
@@ -173,11 +176,12 @@ export default function RegisterPage() {
                 />
 
                 <input
+                  id="register-password-confirmation"
                   type={showRepeatPassword ? "text" : "password"}
                   placeholder="Повторите пароль"
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
-                  className="h-full flex-1 bg-transparent text-text-muted outline-none placeholder:text-text-muted"
+                  className="h-full min-w-0 flex-1 bg-transparent text-text-muted outline-none placeholder:text-text-muted"
                 />
 
                 <button

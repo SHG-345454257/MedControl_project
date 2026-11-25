@@ -122,9 +122,9 @@ export default function PersonalInfo({
 
       <form className="mt-5" onSubmit={handleSubmit}>
         {/* Имя */}
-        <h2 className="font-heading text-[16px] font-bold text-text-main">
+        <label htmlFor="profile-name" className="block font-heading text-[16px] font-bold text-text-main">
           Имя
-        </h2>
+        </label>
 
         <div className="mt-2 flex h-[48px] items-center rounded-input border border-text-muted bg-background px-4">
           <img
@@ -134,6 +134,7 @@ export default function PersonalInfo({
           />
 
           <input
+            id="profile-name"
             type="text"
             placeholder="Введите имя"
             value={name}
@@ -143,9 +144,9 @@ export default function PersonalInfo({
         </div>
 
         {/* Телефон */}
-        <h2 className="mt-4 font-heading text-[16px] font-bold text-text-main">
+        <label htmlFor="profile-phone" className="block mt-4 font-heading text-[16px] font-bold text-text-main">
           Телефон
-        </h2>
+        </label>
 
         <div className="mt-2 flex h-[48px] items-center rounded-input border border-text-muted bg-background px-4">
           <img
@@ -155,6 +156,7 @@ export default function PersonalInfo({
           />
 
           <input
+            id="profile-phone"
             type="tel"
             placeholder="+7 (___) ___-__-__"
             value={phone}
@@ -164,9 +166,9 @@ export default function PersonalInfo({
         </div>
 
         {/* Дата рождения */}
-        <h2 className="mt-4 font-heading text-[16px] font-bold text-text-main">
+        <label htmlFor="profile-birth-date" className="block mt-4 font-heading text-[16px] font-bold text-text-main">
           Дата рождения
-        </h2>
+        </label>
 
         <div className="relative mt-2 flex h-[48px] items-center rounded-input border border-text-muted bg-background px-4">
           <img
@@ -176,6 +178,7 @@ export default function PersonalInfo({
           />
 
           <input
+            id="profile-birth-date"
             type="date"
             value={birthDate}
             onChange={(e) => setBirthDate(e.target.value)}
@@ -194,9 +197,9 @@ export default function PersonalInfo({
         </div>
 
         {/* Пол */}
-        <h2 className="mt-4 font-heading text-[16px] font-bold text-text-main">
+        <label htmlFor="profile-gender" className="block mt-4 font-heading text-[16px] font-bold text-text-main">
           Пол
-        </h2>
+        </label>
 
         <div className="relative mt-2 flex h-[48px] items-center rounded-input border border-text-muted bg-background px-4">
           <img
@@ -220,9 +223,9 @@ export default function PersonalInfo({
           />
 
           <select
+            id="profile-gender"
             value={gender}
             onChange={(e) => setGender(e.target.value)}
-            aria-label="Пол"
             className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
           >
             <option value="">Не указан</option>

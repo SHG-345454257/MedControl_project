@@ -7,7 +7,11 @@ interface HeaderProps {
 export default function Header({ showActions = true }: HeaderProps) {
   return (
     <header className="w-full bg-background">
-      <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
+      <div
+        className={`mx-auto flex min-h-16 max-w-7xl items-center justify-between px-5 sm:px-8 ${
+          showActions ? "max-[420px]:flex-col max-[420px]:gap-2 max-[420px]:pb-3" : ""
+        }`}
+      >
         {/* Логотип и название */}
         <Link to="/" className="flex items-center gap-2">
           <img
@@ -25,7 +29,7 @@ export default function Header({ showActions = true }: HeaderProps) {
 
         {/* Кнопки входа и регистрации */}
         {showActions && (
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
               to="/login"
               className="rounded-pill border border-olive-accent px-4 py-2 text-[13px] text-text-main transition hover:bg-green-bg sm:px-6 sm:text-[14px]"

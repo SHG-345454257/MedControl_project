@@ -121,9 +121,9 @@ export default function ChangePassword() {
 
         {/* Текущий пароль */}
         <div>
-          <h3 className="font-heading text-[16px] font-bold text-text-main">
+          <label htmlFor="current-password" className="block font-heading text-[16px] font-bold text-text-main">
             Текущий пароль
-          </h3>
+          </label>
 
           <div className="mt-2 flex h-[48px] items-center rounded-input border border-text-muted bg-background px-4">
             <img
@@ -169,9 +169,9 @@ export default function ChangePassword() {
 
         {/* Новый пароль */}
         <div className="mt-4">
-          <h3 className="font-heading text-[16px] font-bold text-text-main">
+          <label htmlFor="new-password" className="block font-heading text-[16px] font-bold text-text-main">
             Новый пароль
-          </h3>
+          </label>
 
           <div className="mt-2 flex h-[48px] items-center rounded-input border border-text-muted bg-background px-4">
             <img
@@ -223,9 +223,9 @@ export default function ChangePassword() {
 
         {/* Повтор пароля */}
         <div className="mt-4">
-          <h3 className="font-heading text-[16px] font-bold text-text-main">
+          <label htmlFor="repeat-password" className="block font-heading text-[16px] font-bold text-text-main">
             Повторите новый пароль
-          </h3>
+          </label>
 
           <div className="mt-2 flex h-[48px] items-center rounded-input border border-text-muted bg-background px-4">
             <img
