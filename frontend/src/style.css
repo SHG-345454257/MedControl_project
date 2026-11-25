@@ -83,3 +83,9 @@
     transition: background-color 9999s ease-in-out 0s;
   }
 }
+
+@layer components {
+  .account-page-main {
+    min-height: calc(100svh - 62px);
+  }
+}

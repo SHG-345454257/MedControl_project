@@ -11,6 +11,7 @@ import StatisticsPage from "./pages/StatisticsPage";
 import MedicinePage from "./pages/MedicinePage";
 import MedicineDetailsPage from "./pages/MedicineDetailsPage";
 import CoursesPage from "./pages/CoursesPage";
+import PageMetadata from "./components/layout/PageMetadata";
 import { hasActiveSession } from "./services/session";
 
 function GuestRoutes() {
@@ -24,6 +25,7 @@ function AccountRoutes() {
 function App() {
   return (
     <BrowserRouter>
+      <PageMetadata />
       <Routes>
         <Route path="/family/invite" element={<FamilyInvitePage />} />
 

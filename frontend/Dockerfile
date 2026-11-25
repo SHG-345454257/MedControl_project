@@ -7,6 +7,8 @@ RUN npm ci
 
 COPY . .
 
+ARG VITE_SITE_URL=https://medcontrol.localhost
+ENV VITE_SITE_URL=${VITE_SITE_URL}
 RUN npm run build
 
 FROM nginx:alpine AS production

@@ -99,13 +99,17 @@ export default function MedicineDetailsPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background-soft">
       <AppHeader activePage="Аптечка" />
-      <main className="mx-auto w-full max-w-[1100px] flex-1 px-4 py-8 sm:px-6">
+      <main className="account-page-main mx-auto w-full max-w-[1100px] flex-1 px-4 py-8 sm:px-6">
         <Link to="/medicine" className="mb-4 inline-flex items-center gap-2 text-sm text-text-secondary hover:underline">
           <img src="/images/medicines/back.svg" alt="" className="size-5 shrink-0 object-contain" />
           Назад в аптечку
         </Link>
         {error && <p role="alert">{error}</p>}
-        {!data && !error && <p role="status">Загрузка лекарства…</p>}
+        {(!data || data.medicine.id !== id) && !error && (
+          <p role="status" className="min-h-40 rounded-card bg-card p-5 text-sm text-text-secondary">
+            Загрузка лекарства…
+          </p>
+        )}
         {data?.medicine.id === id && <MedicineDetails {...data} />}
       </main>
       <Footer />

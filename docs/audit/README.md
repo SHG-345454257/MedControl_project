@@ -63,16 +63,16 @@
 
 | Страница | FCP | LCP | TBT | CLS | Speed Index | HTML-отчёт |
 |---|---:|---:|---:|---:|---:|---|
-| `/` | 1,0 с | **5,0 с** | 0 мс | 0,004 | 1,0 с | [Главная](reports/home-before.html) |
-| `/login` | 0,8 с | **3,1 с** | 0 мс | 0 | 0,8 с | [Вход](reports/login-before.html) |
-| `/register` | 0,8 с | **3,1 с** | 0 мс | 0 | 0,8 с | [Регистрация](reports/register-before.html) |
-| `/dashboard` | 0,3 с | 0,4 с | 0 мс | 0,025 | 1,1 с | [Дашборд](reports/dashboard-before.html) |
-| `/medicine` | 0,2 с | 0,2 с | 0 мс | 0,107 | 0,3 с | [Аптечка](reports/medicine-before.html) |
-| `/medicine/:id` | 0,6 с | 0,8 с | 0 мс | 0,163 | 0,7 с | [Карточка лекарства](reports/medicine-details-before.html) |
-| `/courses` | 0,2 с | 0,4 с | 0 мс | 0,134 | 1,3 с | [Курсы](reports/courses-before.html) |
-| `/statistics` | 0,2 с | 0,3 с | 0 мс | 0,029 | 0,4 с | [Статистика](reports/statistics-before.html) |
-| `/family` | 0,2 с | 0,3 с | 0 мс | 0,141 | 0,5 с | [Семейный доступ](reports/family-before.html) |
-| `/profile` | 0,2 с | 0,4 с | 0 мс | 0,065 | 0,3 с | [Личный кабинет](reports/profile-before.html) |
+| `/` | 1,0 с | **5,0 с** | 0 мс | 0,004 | 1,0 с | [Главная](reports/before/home-before.html) |
+| `/login` | 0,8 с | **3,1 с** | 0 мс | 0 | 0,8 с | [Вход](reports/before/login-before.html) |
+| `/register` | 0,8 с | **3,1 с** | 0 мс | 0 | 0,8 с | [Регистрация](reports/before/register-before.html) |
+| `/dashboard` | 0,3 с | 0,4 с | 0 мс | 0,025 | 1,1 с | [Дашборд](reports/before/dashboard-before.html) |
+| `/medicine` | 0,2 с | 0,2 с | 0 мс | 0,107 | 0,3 с | [Аптечка](reports/before/medicine-before.html) |
+| `/medicine/:id` | 0,6 с | 0,8 с | 0 мс | 0,163 | 0,7 с | [Карточка лекарства](reports/before/medicine-details-before.html) |
+| `/courses` | 0,2 с | 0,4 с | 0 мс | 0,134 | 1,3 с | [Курсы](reports/before/courses-before.html) |
+| `/statistics` | 0,2 с | 0,3 с | 0 мс | 0,029 | 0,4 с | [Статистика](reports/before/statistics-before.html) |
+| `/family` | 0,2 с | 0,3 с | 0 мс | 0,141 | 0,5 с | [Семейный доступ](reports/before/family-before.html) |
+| `/profile` | 0,2 с | 0,4 с | 0 мс | 0,065 | 0,3 с | [Личный кабинет](reports/before/profile-before.html) |
 
 ## 3. Замечания по результатам Lighthouse
 
@@ -98,16 +98,16 @@
 
 | Страница | LCP | CLS | INP | Событие INP или комментарий | Скриншот |
 |---|---:|---:|---:|---|---|
-| `/` | 0,18 с | 0 | — | DevTools не зафиксировал взаимодействий в этом замере | [Главная](screenshots/home-live-before.png) |
-| `/login` | 0,19 с | 0 | — | Интерактивный сценарий не выполнялся. Клик по полю, показанный на скриншоте (8 мс), в результат сценария не включён | [Вход](screenshots/login-live-before.png) |
-| `/register` | 0,16 с | 0 | 16 мс | Нажатие клавиши в поле формы (`keyboard`) | [Регистрация](screenshots/register-live-before.png) |
-| `/dashboard` | 0,14 с | 0,03 | 8 мс | Клик по элементу изображения (`pointer`). На скриншоте виден тег `img` | [Дашборд](screenshots/dashboard-live-before.png) |
-| `/medicine` | 0,32 с | 0,10 | 64 мс | Клик по полю поиска (`pointer`) | [Аптечка](screenshots/medicine-live-before.png) |
-| `/medicine/:id` | 2,20 с | 0,09 | 40 мс | Клик по элементу `div` (`pointer`) | [Карточка лекарства](screenshots/medicine-details-live-before.png) |
-| `/courses` | **6,86 с** | **0,30** | 16 мс | Клик по кнопке (`pointer`) | [Курсы](screenshots/courses-live-before.png) |
-| `/statistics` | 0,17 с | 0,03 | 24 мс | Клик по кнопке (`pointer`) | [Статистика](screenshots/statistics-live-before.png) |
-| `/family` | 0,13 с | **0,15** | 56 мс | Клик по полю email (`pointer`) | [Семейный доступ](screenshots/family-live-before.png) |
-| `/profile` | 0,45 с | **0,28** | 16 мс | Клик по кнопке (`pointer`) | [Профиль](screenshots/profile-live-before.png) |
+| `/` | 0,18 с | 0 | — | DevTools не зафиксировал взаимодействий в этом замере | [Главная](screenshots/before/home-live-before.png) |
+| `/login` | 0,19 с | 0 | — | Интерактивный сценарий не выполнялся. Клик по полю, показанный на скриншоте (8 мс), в результат сценария не включён | [Вход](screenshots/before/login-live-before.png) |
+| `/register` | 0,16 с | 0 | 16 мс | Нажатие клавиши в поле формы (`keyboard`) | [Регистрация](screenshots/before/register-live-before.png) |
+| `/dashboard` | 0,14 с | 0,03 | 8 мс | Клик по элементу изображения (`pointer`). На скриншоте виден тег `img` | [Дашборд](screenshots/before/dashboard-live-before.png) |
+| `/medicine` | 0,32 с | 0,10 | 64 мс | Клик по полю поиска (`pointer`) | [Аптечка](screenshots/before/medicine-live-before.png) |
+| `/medicine/:id` | 2,20 с | 0,09 | 40 мс | Клик по элементу `div` (`pointer`) | [Карточка лекарства](screenshots/before/medicine-details-live-before.png) |
+| `/courses` | **6,86 с** | **0,30** | 16 мс | Клик по кнопке (`pointer`) | [Курсы](screenshots/before/courses-live-before.png) |
+| `/statistics` | 0,17 с | 0,03 | 24 мс | Клик по кнопке (`pointer`) | [Статистика](screenshots/before/statistics-live-before.png) |
+| `/family` | 0,13 с | **0,15** | 56 мс | Клик по полю email (`pointer`) | [Семейный доступ](screenshots/before/family-live-before.png) |
+| `/profile` | 0,45 с | **0,28** | 16 мс | Клик по кнопке (`pointer`) | [Профиль](screenshots/before/profile-live-before.png) |
 
 DevTools отметил LCP **6,86 с** и CLS **0,30** на странице курсов как плохие. В профиле плохую оценку получил CLS **0,28**. На странице семейного доступа CLS **0,15** требует улучшения. В аптечке DevTools также отметил CLS как требующий улучшения, хотя на скриншоте отображается округлённое значение **0,10**. Среди замеров с интерактивным сценарием INP составил **8–64 мс**.
 
@@ -160,7 +160,7 @@ DevTools отметил LCP **6,86 с** и CLS **0,30** на странице к
 | Best Practices | 100 | 96 | 96 |
 | SEO | 100 | 100 | 100 |
 
-[Отчёт MedControl](reports/home-before.html) · [Medisafe — Lighthouse для компьютеров](screenshots/medisafe-psi-desktop.png) · [Medisafe — Lighthouse для мобильных](screenshots/medisafe-psi-mobile-field.png)
+[Отчёт MedControl](reports/before/home-before.html) · [Medisafe — Lighthouse для компьютеров](screenshots/medisafe-psi-desktop.png) · [Medisafe — Lighthouse для мобильных](screenshots/medisafe-psi-mobile-field.png)
 
 ### Полевые данные Medisafe
 
@@ -215,10 +215,10 @@ DevTools отметил LCP **6,86 с** и CLS **0,30** на странице к
 
 | Страница | Performance | Accessibility | Best Practices | SEO | LCP, с | Отчёты |
 |---|---:|---:|---:|---:|---:|---|
-| Главная | 75 → **93** | 87 → **97** | 100 → 100 | 100 → 100 | 5,0 → **1,6** | [До](reports/home-before.html) · [После](reports/home-after.html) |
-| Вход | 82 → **82** | 93 → **100** | 100 → 100 | — → — | 3,1 → 3,0 | [До](reports/login-before.html) · [После](reports/login-after.html) |
-| Регистрация | 82 → **82** | 93 → **100** | 100 → 100 | — → — | 3,1 → 3,1 | [До](reports/register-before.html) · [После](reports/register-after.html) |
-| Профиль | 99 → **100** | 89 → **100** | 100 → 100 | — → — | 0,4 → 0,4 | [До](reports/profile-before.html) · [После](reports/profile-after.html) |
+| Главная | 75 → **93** | 87 → **97** | 100 → 100 | 100 → 100 | 5,0 → **1,6** | [До](reports/before/home-before.html) · [После](reports/after/home-after.html) |
+| Вход | 82 → **82** | 93 → **100** | 100 → 100 | — → — | 3,1 → 3,0 | [До](reports/before/login-before.html) · [После](reports/after/login-after.html) |
+| Регистрация | 82 → **82** | 93 → **100** | 100 → 100 | — → — | 3,1 → 3,1 | [До](reports/before/register-before.html) · [После](reports/after/register-after.html) |
+| Профиль | 99 → **100** | 89 → **100** | 100 → 100 | — → — | 0,4 → 0,4 | [До](reports/before/profile-before.html) · [После](reports/after/profile-after.html) |
 
 На главной объём переданных данных снизился с **8 105 до 1 432 КиБ**, примерно на **82%**. Performance вырос на **18 баллов**, а LCP сократился с **5,0 до 1,6 с**. На входе и регистрации оценка Performance осталась **82**, при этом доступность на обеих страницах выросла с **93 до 100**.
 
@@ -228,13 +228,47 @@ DevTools отметил LCP **6,86 с** и CLS **0,30** на странице к
 
 | Правка | Результат | Подтверждение |
 |---|---|---|
-| Контраст | Lighthouse подтвердил достаточный контраст на главной, входе, регистрации и в профиле. | [Главная](reports/home-after.html) · [Вход](reports/login-after.html) · [Регистрация](reports/register-after.html) · [Профиль](reports/profile-after.html) |
-| Подписи полей | Вход, регистрация и профиль прошли проверку подписей. На регистрации клик по подписи Email переводит фокус в поле. | [Фокус в поле Email](screenshots/register-label-focus-after.png) |
-| Шапка и первый экран | На 375 px кнопки расположены под логотипом, на 430 px — в одной строке с ним. Текст первого экрана читается. Ширины указаны по настройкам ручной проверки, которых нет в кадре. | [375 px](screenshots/home-mobile-375-after.png) · [430 px](screenshots/home-mobile-430-after.png) |
-| Мобильная форма входа | Поля и кнопка показа пароля помещаются в карточке на ширине 375 px. | [Вход на 375 px](screenshots/register-mobile-375-after.png) |
-| Размер и загрузка баннеров | Суммарный размер трёх ресурсов снизился с **6,80 МиБ до 293 КиБ** (около **96%**). В Network инициатор загрузки первого WebP — HTML-документ. | [Запросы баннеров](screenshots/home-banners-network-after.png) |
+| Контраст | Lighthouse подтвердил достаточный контраст на главной, входе, регистрации и в профиле. | [Главная](reports/after/home-after.html) · [Вход](reports/after/login-after.html) · [Регистрация](reports/after/register-after.html) · [Профиль](reports/after/profile-after.html) |
+| Подписи полей | Вход, регистрация и профиль прошли проверку подписей. На регистрации клик по подписи Email переводит фокус в поле. | [Фокус в поле Email](screenshots/after/register-label-focus-after.png) |
+| Шапка и первый экран | На 375 px кнопки расположены под логотипом, на 430 px — в одной строке с ним. Текст первого экрана читается. Ширины указаны по настройкам ручной проверки, которых нет в кадре. | [375 px](screenshots/after/home-mobile-375-after.png) · [430 px](screenshots/after/home-mobile-430-after.png) |
+| Мобильная форма входа | Поля и кнопка показа пароля помещаются в карточке на ширине 375 px. | [Вход на 375 px](screenshots/after/register-mobile-375-after.png) |
+| Размер и загрузка баннеров | Суммарный размер трёх ресурсов снизился с **6,80 МиБ до 293 КиБ** (около **96%**). В Network инициатор загрузки первого WebP — HTML-документ. | [Запросы баннеров](screenshots/after/home-banners-network-after.png) |
+
+### Сравнение с занятиями 70–71
+
+| Замер | SEO в Lighthouse | Результат |
+|---|---:|---|
+| [Занятия 70–71, до исправлений](../seo/before.png) | 91 | Проверка `robots.txt` не пройдена. Lighthouse отобразил 21 ошибку. |
+| [Занятия 70–71, после исправлений](../seo/after.png) | 100 | Замечание по проверке `robots.txt` исчезло. Число пройденных проверок выросло с 7 до 8. |
+| [Текущий аудит, исходный замер главной](reports/before/home-before.html) | 100 | Оценка совпала с итогом занятий 70–71. |
+| [Текущий аудит, повторный замер главной](reports/after/home-after.html) | 100 | Оценка сохранилась после исправлений в этом аудите. |
+
+При ручной проверке я обнаружила адреса с доменом-заглушкой `example.com` в `robots.txt` и `sitemap.xml`. Это замечание сохранялось при оценке SEO 100 и было устранено во втором круге исправлений.
+
+### Второй круг исправлений
+
+| Пункт | Результат проверки | Подтверждение |
+|---|---|---|
+| 5. Сдвиги макета | После повторного замера на всех пяти страницах CLS снизился. | [Сравнение замеров](#пункт-5-повторный-замер-cls) |
+| 6. `robots.txt` и `sitemap.xml` | Оба файла открываются. В `robots.txt` указан адрес `https://medcontrol.localhost/sitemap.xml`, а в карте сайта — главная страница `https://medcontrol.localhost/`. Адреса с `example.com` удалены. | [robots.txt](screenshots/after/robots-after.png) · [sitemap.xml](screenshots/after/sitemap-after.png) |
+| 7. Директива `noindex` | Я вручную проверила заголовки HTML-ответов в DevTools (F12 → Network → Headers → Response Headers). На всех внутренних страницах есть `X-Robots-Tag: noindex`. На главной `/` этот заголовок отсутствует. | [Пример для страницы входа](screenshots/after/login-noindex-after.png) |
+| 8. Иерархия заголовков | При ручной проверке на главной после основного `h1` идут заголовки карточек уровня `h2`. | Ручная проверка в Elements · [Отчёт Lighthouse второго круга](reports/round-two/home-round-two.html) |
+| 13. Фильтры аптечки | На ширинах 375 и 430 px фильтры расположены по центру строк. Видимых смещений при проверке не было. | [375 px](screenshots/after/medicine-filters-375-after.png) · [430 px](screenshots/after/medicine-filters-430-after.png) |
+
+#### Пункт 5. Повторный замер CLS
+
+Я сравнила исходные и повторные локальные замеры CLS в DevTools → Performance → Local metrics. Значения приведены с точностью, показанной в DevTools.
+
+| Страница | CLS до | CLS после второго круга | Скриншоты |
+|---|---:|---:|---|
+| Аптечка | 0,10 | **0** | [Замер до](screenshots/before/medicine-live-before.png) · [Повторный замер](screenshots/round-two/medicine-cls-round-two.png) |
+| Карточка лекарства | 0,09 | **0,03** | [Замер до](screenshots/before/medicine-details-live-before.png) · [Повторный замер](screenshots/round-two/medicine-details-cls-round-two.png) |
+| Курсы | 0,30 | **0** | [Замер до](screenshots/before/courses-live-before.png) · [Повторный замер](screenshots/round-two/courses-cls-round-two.png) |
+| Семейный доступ | 0,15 | **0** | [Замер до](screenshots/before/family-live-before.png) · [Повторный замер](screenshots/round-two/family-cls-round-two.png) |
+| Профиль | 0,28 | **0** | [Замер до](screenshots/before/profile-live-before.png) · [Повторный замер](screenshots/round-two/profile-cls-round-two.png) |
+
+CLS снизился на всех пяти страницах. На четырёх из них DevTools показал **0**, а на карточке лекарства зафиксировал один сдвиг с итоговым CLS **0,03**. Все пять результатов после второго круга отмечены в DevTools как хорошие.
 
 ### Что осталось
 
-- На главной Lighthouse по-прежнему отмечает нарушение последовательности заголовков. Это замечание соответствует оценке Accessibility **97**.
-- Сдвиги макета, адреса-заглушки в SEO-файлах, метаданные и отдельные проблемы мобильной вёрстки внутренних страниц остаются в таблице приоритетов.
+- Остальные замечания, включая мобильную вёрстку отдельных внутренних страниц, остались за пределами второго круга.

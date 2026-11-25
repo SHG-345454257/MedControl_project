@@ -107,22 +107,16 @@ export default function PharmacyOffers({
         Новосибирск. Цену и наличие уточняйте на сайте.
       </p>
 
-      {pending > 0 && (
-        <p role="status" className="mt-2 text-sm text-text-secondary">
-          Ищем предложения…
-        </p>
-      )}
-
-      {pending === 0 && cards.length === 0 && (
-        <p className="mt-3 text-sm text-text-secondary">Цены получить не удалось.</p>
-      )}
+      <p role="status" className="mt-2 min-h-5 text-sm text-text-secondary">
+        {pending > 0 ? "Ищем предложения…" : cards.length === 0 ? "Цены получить не удалось." : ""}
+      </p>
 
       {cards.length > 0 && (
         <div
           role="region"
           aria-label="Карточки аптек"
           tabIndex={0}
-          className="mt-3 flex w-full min-w-0 flex-nowrap gap-3 overflow-x-auto pb-3"
+          className="mt-3 flex min-h-48 w-full min-w-0 flex-nowrap gap-3 overflow-x-auto pb-3"
         >
           {cards.map(({ key, title, description, price, url, action }) => (
             <article

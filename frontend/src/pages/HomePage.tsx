@@ -144,9 +144,9 @@ export default function HomePage() {
                   />
                 </div>
 
-                <h3 className="font-heading text-[18px] font-bold leading-[1.25] text-text-main">
+                <h2 className="font-heading text-[18px] font-bold leading-[1.25] text-text-main">
                   {item.title}
-                </h3>
+                </h2>
 
                 <p className="mt-2 max-w-[250px] text-[14px] leading-[1.35] text-text-secondary">
                   {item.text}

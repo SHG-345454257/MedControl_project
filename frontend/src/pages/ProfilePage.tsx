@@ -224,7 +224,7 @@ export default function ProfilePage() {
     <div className="flex min-h-screen flex-col bg-background-soft">
       <AppHeader activePage={null} />
 
-      <main className="flex flex-1 flex-col">
+      <main className="account-page-main flex flex-1 flex-col">
         <section className="flex-1 px-6 pb-8 pt-8">
           <div className="mx-auto max-w-[1100px]">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
@@ -243,8 +243,9 @@ export default function ProfilePage() {
             </div>
 
             {loading && (
-              <div className="rounded-card bg-card p-8 text-center shadow-card">
-                <p role="status" className="text-[14px] text-text-secondary">
+              <div className="grid gap-6 md:grid-cols-[270px_minmax(0,1fr)]">
+                <div aria-hidden="true" className="min-h-[34rem] rounded-card bg-card shadow-card md:min-h-0" />
+                <p role="status" className="min-h-[560px] rounded-card bg-card p-6 text-sm text-text-secondary shadow-card">
                   Загрузка профиля…
                 </p>
               </div>
@@ -270,7 +271,7 @@ export default function ProfilePage() {
                   onAvatarSelected={(file) => void uploadAvatar(file)}
                 />
 
-                <section className="h-[560px] rounded-card bg-card p-6 shadow-card">
+                <section className="min-h-[560px] rounded-card bg-card p-6 shadow-card">
                   {activeTab === "personal" && (
                     <PersonalInfo
                       profile={profile}

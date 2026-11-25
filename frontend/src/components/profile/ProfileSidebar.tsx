@@ -42,7 +42,7 @@ export default function ProfileSidebar({
   const avatarLabel = avatarUrl ? "Изменить фото" : "Загрузить фото";
 
   return (
-    <aside className="relative h-full overflow-hidden rounded-card bg-card p-6 pb-[150px] shadow-card">
+    <aside className="relative h-full min-h-[34rem] overflow-hidden rounded-card bg-card p-6 pb-[150px] shadow-card md:min-h-0">
       <div className="relative z-10 flex flex-col items-center border-b border-[#D9DDCF] pb-6">
         <input
           ref={avatarInput}

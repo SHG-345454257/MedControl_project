@@ -73,7 +73,7 @@ export default function MedicinePage() {
     <div className="flex min-h-screen flex-col bg-background-soft">
       <AppHeader activePage="Аптечка" />
 
-      <main className="relative mx-auto w-full max-w-[1100px] flex-1 px-4 py-8 sm:px-6">
+      <main className="account-page-main relative mx-auto w-full max-w-[1100px] flex-1 px-4 py-8 sm:px-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h1 className="font-heading text-[32px] font-bold">Моя аптечка</h1>
           <button type="button" disabled={loading} onClick={() => setEditor({ medicine: null })} className="inline-flex items-center gap-2 rounded-pill bg-olive-accent px-4 py-2 text-sm text-background transition-colors enabled:hover:bg-green-accent enabled:hover:text-text-main disabled:opacity-60">
@@ -87,7 +87,7 @@ export default function MedicinePage() {
             <img src="/images/pharmacy/search.svg" alt="" className="size-5 shrink-0 object-contain" />
             <input type="search" aria-label="Поиск по названию лекарства" placeholder="Поиск по названию лекарства…" value={query} onChange={(event) => setQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent text-text-main outline-none placeholder:text-text-muted" />
           </label>
-          <div role="group" aria-label="Фильтры аптечки" className="flex flex-wrap gap-1 rounded-pill bg-card p-1">
+          <div role="group" aria-label="Фильтры аптечки" className="flex w-full flex-wrap justify-center gap-1 rounded-card bg-card p-1 sm:w-auto sm:rounded-pill">
             {filters.map(({ label }, index) => (
               <button key={label} type="button" aria-pressed={filter === index} onClick={() => setFilter(index)} className={`rounded-pill px-3 py-1.5 text-xs ${filter === index ? "bg-green-accent" : "bg-green-bg hover:bg-background-soft"}`}>
                 {label}
@@ -96,7 +96,6 @@ export default function MedicinePage() {
           </div>
         </div>
 
-        {loading && <p role="status">Загрузка аптечки…</p>}
         {error && <p role="alert" className="mb-4 rounded-input bg-card p-3">{error}</p>}
         {!loading && !error && !visible.length && (
           <p className="rounded-card bg-card p-6 text-text-secondary">
@@ -105,6 +104,11 @@ export default function MedicinePage() {
         )}
 
         <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {loading && (
+            <p role="status" className="min-h-48 rounded-card bg-card p-4 text-sm text-text-secondary">
+              Загрузка аптечки…
+            </p>
+          )}
           {visible.map((medicine) => (
             <MedicineCard key={medicine.id} medicine={medicine} onEdit={() => setEditor({ medicine })} onRemove={() => void remove(medicine)} />
           ))}

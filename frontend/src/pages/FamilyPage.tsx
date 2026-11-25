@@ -159,7 +159,7 @@ export default function FamilyPage() {
     <div className="flex min-h-screen flex-col bg-background-soft">
       <AppHeader activePage="Семейный доступ" />
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-8 sm:px-8">
+      <main className="account-page-main mx-auto w-full max-w-6xl flex-1 px-5 py-8 sm:px-8">
         <div className="relative pb-8 sm:min-h-[144px] sm:pr-40">
           <img
             src="/images/family/leaves.svg"
@@ -179,7 +179,7 @@ export default function FamilyPage() {
         </div>
 
         <div className="relative grid items-stretch gap-4 lg:grid-cols-[1.18fr_1fr]">
-          <section className="flex flex-col rounded-card bg-card p-5 shadow-card sm:p-6">
+          <section className="flex min-h-[22rem] min-w-0 flex-col rounded-card bg-card p-5 shadow-card sm:p-6">
             <div className="mb-5 flex items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-green-bg">
                 <img
@@ -194,14 +194,18 @@ export default function FamilyPage() {
             </div>
 
             {loadError && <p role="alert">{loadError}</p>}
-            {!data && !loadError && <p role="status">Загрузка профилей…</p>}
             {data?.profiles.length === 0 && <p>Доступных профилей пока нет.</p>}
 
             <div className="grid flex-1 auto-rows-fr gap-4 sm:grid-cols-2">
+              {!data && !loadError && (
+                <p role="status" className="min-h-64 rounded-[18px] bg-background p-4 text-sm text-text-secondary">
+                  Загрузка профилей…
+                </p>
+              )}
               {data?.profiles.map((profile) => (
                 <article
                   key={profile.id}
-                  className={`flex min-w-0 flex-col rounded-[18px] border border-olive-accent/50 p-4 ${
+                  className={`flex min-h-64 min-w-0 flex-col rounded-[18px] border border-olive-accent/50 p-4 ${
                     profile.isSelf ? "bg-[#ADBF98]" : "bg-background"
                   }`}
                 >
@@ -271,7 +275,7 @@ export default function FamilyPage() {
             </div>
           </section>
 
-          <section className="rounded-card bg-card p-5 shadow-card sm:p-6">
+          <section className="min-w-0 rounded-card bg-card p-5 shadow-card sm:p-6">
             <div className="mb-4 flex items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-green-bg">
                 <img

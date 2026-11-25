@@ -76,7 +76,7 @@ export default function CoursesPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background-soft">
       <AppHeader activePage="Курсы" />
-      <main className="mx-auto w-full max-w-[1100px] flex-1 px-4 py-8 sm:px-6">
+      <main className="account-page-main mx-auto w-full max-w-[1100px] flex-1 px-4 py-8 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="font-heading text-[32px] font-bold">Мои курсы лечения</h1>
           <button type="button" disabled={loading} onClick={() => setEditor({ course: null })}
@@ -95,13 +95,17 @@ export default function CoursesPage() {
           ))}
         </div>
 
-        {loading && <p role="status">Загрузка курсов…</p>}
         {error && <p role="alert" className="mb-4 rounded-input bg-card p-3">{error}</p>}
         {!loading && !error && !visible.length && <p className="rounded-card bg-card p-6">Курсов пока нет.</p>}
 
         <div className="relative">
           <img src="/images/courses/leaves-bg.svg" alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
           <div className="relative space-y-4">
+            {loading && (
+              <p role="status" className="min-h-64 rounded-card bg-card p-5 text-sm text-text-secondary">
+                Загрузка курсов…
+              </p>
+            )}
             {visible.map((course) => (
               <CourseCard key={course.id} course={course} onEdit={() => setEditor({ course })} onRemove={() => void remove(course)} />
             ))}
