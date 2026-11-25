@@ -99,7 +99,7 @@ export default function CoursesPage() {
         {!loading && !error && !visible.length && <p className="rounded-card bg-card p-6">Курсов пока нет.</p>}
 
         <div className="relative">
-          <img src="/images/courses/leaves-bg.svg" alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+          <img src="/images/courses/leaves-bg.webp" alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
           <div className="relative space-y-4">
             {loading && (
               <p role="status" className="min-h-64 rounded-card bg-card p-5 text-sm text-text-secondary">

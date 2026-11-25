@@ -60,7 +60,7 @@ export default function RegisterPage() {
 
           {/* Картинка — задний слой */}
           <img
-            src="/images/enter/leaves.svg"
+            src="/images/enter/leaves.webp"
             alt=""
             className="absolute bottom-[+180px] left-1/2 z-0 pointer-events-none h-auto w-[calc(100%+2rem)] max-w-none -translate-x-1/2 lg:w-auto lg:max-w-full lg:scale-[1.6] lg:scale-x-[2.0]"
           />
